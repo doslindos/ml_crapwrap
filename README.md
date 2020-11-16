@@ -2,7 +2,7 @@
 
 ## Description
 The purpose of this project has been for me to practice Python and Machine Learning
-It is a wrapper for trying out Machine Learning functions. 
+<br />It is a wrapper for trying out Machine Learning functions. 
 The project came to be as I tried to learn how to use several Machine Learning models and was tired to write a new script for every single one of them.<br />
 After several scripts lying all ower my computer I decided to create a single repo for them<br />
 If you want to test out the project it will require from you some basic knowledge of using the commandline but the instructions are hopefully clear enough for a quick try.<br />
