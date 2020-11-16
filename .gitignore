@@ -1,0 +1,60 @@
+# Environments 
+.env 
+.venv 
+env/ 
+venv/ 
+ENV/ 
+env.bak/ 
+venv.bak/ 
+
+# Installer logs 
+pip-log.txt 
+pip-delete-this-directory.txt
+
+# Distribution / packaging 
+.Python 
+build/ 
+develop-eggs/ 
+dist/ 
+downloads/ 
+eggs/ 
+.eggs/ 
+lib/ 
+lib64/ 
+parts/ 
+sdist/ 
+var/ 
+wheels/ 
+share/python-wheels/ 
+*.egg-info/ 
+.installed.cfg 
+*.egg 
+MANIFEST
+
+# Byte-compiled / optimized / DLL files 
+__pycache__/ 
+*.py[cod] 
+*$py.class  
+
+# C extensions 
+*.so
+
+#Local credential configurations
+credentials.py
+
+#created datasets and creation files
+created_datasets/
+data_scripts/*
+!data_scripts/example.sql
+!data_scripts/README.md
+data_files/*
+!data_files/README.md
+*.txt
+!requirements.txt
+
+#created models
+saved_models/
+
+#vim editor swap files
+*.swp
+*.swo

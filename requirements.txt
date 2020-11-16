@@ -1,0 +1,11 @@
+# Uncheck gpu or normal version of tensorflow
+#tensorflow-gpu
+#tensorflow
+tensorflow-datasets
+scikit-learn
+matplotlib
+spotipy
+mysql-connector-python
+matplotlib
+opencv-python
+Pillow
