@@ -7,6 +7,7 @@ from os import getcwd
 from collections import deque
 
 import tensorflow as tf
+from tensorflow import reshape as tfreshape
 from tensorflow import data as tfdata, optimizers as tfoptimizers, reshape as tfreshape
 from sys import exit
 from pathlib import Path
@@ -15,10 +16,10 @@ from sklearn import decomposition as skdecomposition, cluster as skcluster
 from utils.main_utils import run_function, get_dataset_info, fetch_model, import_with_string
 
 from GUI.GUI_utils import open_dirGUI
-from .utils.layer_build_functions import Layer_Handler 
-from .utils.training_functions import tf_training_loop 
+from third_party.tensorflow.build.layer_build_functions import Layer_Handler 
+from third_party.tensorflow.train.training_functions import tf_training_loop 
+from third_party.tensorflow.train import optimization, loss_functions
 from .utils.model_handling_functions import save_configuration, save_weights, save_sk_model, load_weights, load_sk_model, load_configuration, handle_init, create_prediction_file, map_params
 
-from train_operations import optimization, loss_functions
-from test_operations import test_functions
+from tests.model_tests import test_functions
 from .model_handler import ModelHandler

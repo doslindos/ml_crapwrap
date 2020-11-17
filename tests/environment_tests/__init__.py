@@ -1,9 +1,5 @@
-import main
 from argparse import Namespace
 import traceback
-from .env_test_functions import create_dataset_test, training_test, testing_test
-from .mnist_tests import run_mnist
-from .spotify_tests import run_spoti
 
 def print_loop(test_dict):
     for key, value in test_dict.items():

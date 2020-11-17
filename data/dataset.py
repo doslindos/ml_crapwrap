@@ -85,7 +85,6 @@ class Dataset:
                         setattr(self, key, [])
                         self.data_key_list.append(key)
                         data_lists[key] = getattr(self, key)
-            
             return data_lists
         
         path = Path("data", "created_datasets", self.dataset_name)
@@ -103,6 +102,7 @@ class Dataset:
             print("Dataset "+self.dataset_name+" does not exist...")
             exit()
         
+    
     def get_values(self, index):
         if hasattr(self, 'data_lists'):
             return [[key, dlist[index]] for key, dlist in self.data_lists.items()]

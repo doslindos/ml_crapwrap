@@ -124,7 +124,7 @@ class Model:
             in_shape.insert(0, -1)
             if npprod(x.shape[1:]) == npprod(in_shape[1:]):
                 x = tfreshape(x, in_shape)
-
+        
         # Get all layer configurations in a list
         if not hasattr(self, 'layer_confs'):
             layer_confs = {}

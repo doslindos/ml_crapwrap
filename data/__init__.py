@@ -13,7 +13,7 @@ from tensorflow import cast as tfcast, float32 as tffloat32, py_function as tfpy
 from tensorflow import data as tfdata
 
 from .dataset import Dataset
-from plot_operations.plot_utils import build_histogram
-from sklearn_operations.sklearn_functions import split_dataset
+from plotting.plot_utils import build_histogram
+from third_party.sklearn.sklearn_functions import split_dataset, label_encoding as sk_label_encoding, one_hot_encoding as sk_one_hot
 from utils.main_utils import duplicate_along
 

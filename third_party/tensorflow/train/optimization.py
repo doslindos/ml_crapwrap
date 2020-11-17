@@ -1,4 +1,4 @@
-from . import tf
+from .. import tf
 
 def classifier(model_object, x, y, loss_function, optimizer, training=True):
 

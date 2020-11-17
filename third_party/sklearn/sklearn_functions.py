@@ -1,4 +1,4 @@
-from . import skd, metrics, train_test_split, shuffle, nparray, npappend, results_to_nplist
+from . import skd, metrics, train_test_split, shuffle, nparray, npappend, results_to_nplist, preprocessing
 
 def split_dataset(data, labels, train_size, make_shuffle=True):
     # Splits dataset into train and test set
@@ -43,3 +43,27 @@ def make_confusion_matrix(y_true, y_prediction, labels):
     cm = metrics.confusion_matrix(y_true, y_prediction, labels=labels)
     print(cm)
     return cm
+
+def label_encoding(labels):
+    # Uses preprocess.LabelEncoder to encode labels
+    # In:
+    #   labels:                 list, every instance is a label
+    # Out:
+    #   label_encoder:          Sklearn LabelEncoder object
+    
+    label_encoder = preprocessing.LabelEncoder()
+    label_encoder.fit(labels)
+    return label_encoder
+
+def one_hot_encoding(labels):
+    # Uses preprocess.LabelEncoder to encode labels
+    # In:
+    #   labels:                 list, every instance is a label
+    # Out:
+    #   label_encoder:          Sklearn LabelEncoder object
+    
+    one_hot_encoder = preprocessing.OneHotEncoder()
+    one_hot_encoder.fit(labels)
+    return one_hot_encoder
+
+

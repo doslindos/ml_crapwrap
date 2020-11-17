@@ -21,6 +21,32 @@ def get_xy(instance):
 
     return (x, y)
 
+def get_callable_class_functions(class_obj):
+    # Takes a class object and returns a list of its callable functions
+    # In:
+    #   class_obj:                      class object
+    # Out:
+    #   function list:                  list of callable function names
+
+    return [func for func in dir(class_obj) if not func.startswith('__') and callable(getattr(class_obj, func))]
+
+
+def if_callable_class_function(class_obj, function):
+    # Takes class and function name
+    # and checks if the function is in it
+    # In:
+    #   class_obj:                      class object used
+    #   function:                       str, function name
+    # Out:
+    #   boolean:                        function is found in classes callable functions or not
+
+    callable_functions = get_callable_class_functions(class_obj)
+    print(callable_functions)
+    if function in callable_functions:
+        return True
+    else:
+        return False
+
 def take_image_screen(size=[]):
     pass
 

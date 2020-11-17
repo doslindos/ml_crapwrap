@@ -2,7 +2,7 @@ from .. import tf
 
 # Training handling function
 
-def parse_sample(batch, onehot=True):
+def parse_sample(batch, model, onehot=True):
     # Parses tensorflow dataset object sample
     # In:
     #   batch:                      tensorflow Dataset tensor, contains data - label pairs
@@ -18,9 +18,9 @@ def parse_sample(batch, onehot=True):
     else:
         print("Batch type not recognized... Check models/utils/util_functions.py parse_sample function")
         exit()
-
+    
     if onehot:
-        y = tf.one_hot(y, 10)
+        y = tf.one_hot(y, model.run(x).shape[-1])
 
     #Cast to same datatype if not already
     if x.dtype != y.dtype:
@@ -58,7 +58,7 @@ def tf_training_loop(
     for epoch in range(epochs):
         for step, batch_x in enumerate(dataset):
             
-            x, y = parse_sample(batch_x, onehot=onehot)
+            x, y = parse_sample(batch_x, model, onehot)
             if autoencoder:
                 y = x
 

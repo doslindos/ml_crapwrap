@@ -1,4 +1,4 @@
-from .. import Dataset, split_dataset, nparray, tfdata, duplicate_along, tfpy_func, tfuint8, tfint64
+from .. import Dataset, split_dataset, nparray, tfdata, duplicate_along, tfpy_func, tfuint8, tfint64, sk_label_encoding, sk_one_hot
 from . import normalize
 
 class Preprocess:
@@ -22,17 +22,24 @@ class Preprocess:
         
         #Fetch dataset and remove duplicates
         dataset = Dataset(dataset_name, sub_sample)
-        dataset.merge_duplicates(data_key)
+        #dataset.merge_duplicates(data_key)
 
         #Take lists from dataset with keys
         data = getattr(dataset, data_key)
         
-        self.original_data = tuple(zip(data, getattr(dataset, label_key)))
+        if hasattr(dataset, 'labels'):
+            labels = getattr(dataset, 'labels')
+            label_key = 'labels'
+        else:
+            labels = getattr(dataset, label_key)
+
+        # Store original data
+        self.original_data = tuple(zip(data, labels))
+        
         data = nparray(data)
-        labels = getattr(dataset, label_key)
 
         #Normalize selected dimensions
-        data = getattr(normalize, norm_function)(data)
+        #data = getattr(normalize, norm_function)(data)
         
         #Change popularity values from scale 0-100 to 0-9
         if label_key == 'popularity':
@@ -53,6 +60,10 @@ class Preprocess:
                             break
                 
                 labels[i] = final_group
+        else:
+            label_encoder = sk_label_encoding(labels)
+            labels = label_encoder.transform(labels)
+            self.label_encoder = label_encoder
         
         x_train, x_test, y_train, y_test = split_dataset(data, labels, train_size)
         
