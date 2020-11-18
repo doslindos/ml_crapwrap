@@ -1,8 +1,7 @@
-from . import create_args
+from . import create_args, GPU_config, validate_args
 
 from ..command_functions.dataset import create_dataset, dataset_information
 from ..command_functions.train import train_model
-from ..command_functions.utils import validate_args, GPU_config
 
 
 class CreateArgs:
@@ -25,6 +24,7 @@ class CreateArgs:
         else:
             parsed_args = args
 
+        GPU_config()
         # Validate input arguments
         validate_args(vars(parsed_args))
         # Run function
@@ -58,7 +58,7 @@ class CreateArgs:
         # Validate input arguments
         validate_args(vars(parsed_args))
         # Set up gpu if you use gpu version of the tensorflow
-        GPU_config()
+        #GPU_config()
         # Run function
         train_model(parsed_args)
         

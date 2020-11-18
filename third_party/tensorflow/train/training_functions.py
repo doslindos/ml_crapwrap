@@ -9,7 +9,7 @@ def parse_sample(batch, model, onehot=True):
     #   onehot:                     bool, if true convert labels to one_hot_labels
     # Out:
     #   (x, y)                      tuple, (tensorflow Tensor, tensroflow Tensor)
-
+    
     if isinstance(batch, dict):
         x = batch['x']
         y = batch['y']
@@ -19,9 +19,12 @@ def parse_sample(batch, model, onehot=True):
         print("Batch type not recognized... Check models/utils/util_functions.py parse_sample function")
         exit()
     
+    if not hasattr(x, 'numpy'):
+        x = tf.convert_to_tensor(x)
+
     if onehot:
         y = tf.one_hot(y, model.run(x).shape[-1])
-
+    
     #Cast to same datatype if not already
     if x.dtype != y.dtype:
         y = tf.cast(y, x.dtype)
@@ -42,7 +45,8 @@ def tf_training_loop(
         optimizer, 
         epochs=10, 
         onehot=False,
-        autoencoder=False
+        autoencoder=False,
+        debug=False
         ):
 
     # The training loop
@@ -57,7 +61,6 @@ def tf_training_loop(
     
     for epoch in range(epochs):
         for step, batch_x in enumerate(dataset):
-            
             x, y = parse_sample(batch_x, model, onehot)
             if autoencoder:
                 y = x

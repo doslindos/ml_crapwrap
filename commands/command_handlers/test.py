@@ -1,10 +1,6 @@
-from . import create_args, if_callable_class_function, get_callable_class_functions
-from .create import CreateArgs
+from . import validate_args, GPU_config, create_args, if_callable_class_function, get_callable_class_functions
 from ..command_functions.plot import plot_model
 from ..command_functions.test import test_model
-from importlib.util import find_spec
-from importlib import import_module
-import traceback
 
 class TestArgs:
     
@@ -69,71 +65,3 @@ class TestArgs:
         plot_model(parsed_args)
 
 
-    def create_command_test():
-        
-        conf_loaction = "tests.environment_tests.test_confs."
-
-        def run(command, data):
-
-            # Check if command to be tested is in main commands
-            if if_callable_class_function(CreateArgs, command):
-                
-                # Get test configuration
-                if find_spec(conf_loaction+data) is not None:
-                    
-                    # Get the configuration file
-                    arg_conf_file = import_module(conf_loaction+ data)
-                    
-                    # Get the right configuration
-                    if hasattr(arg_conf_file, command):
-                    
-                        arg_conf = getattr(arg_conf_file, command)
-                        # Finally run the function
-                        try:
-                            getattr(CreateArgs, command)(arg_conf)
-                            print("Function "+command+" with "+data+" works...")
-                        except Exception as e:
-                            print(traceback.print_exception(e))
-                            print(e)
-                            print("Function "+command+" with "+data+" doesn't work!")
-
-                    
-                    else:
-                        print("The configuration file: ", data, " did not have a configuration called: ", command)
-
-                else:
-                    print("No configuration found for ", data)
-            
-            else:
-                print("Command not found... \nUsable commands to test: ",get_callable_class_functions(CreateArgs)," ")
-        
-
-        #Defines test function inputs and calls argument parser
-        parser_args = {'description':'Test a creating command (dataset and model creation)'}
-        
-        add_args = [
-            {'name':['command'], 'type':str, 'help':'Main command'},
-            {'name':['-test_command'], 'type':str, 'required':True, 'help':'Name of the command to be tested, use "all" to test all commands'},
-            {'name':['-testing_data'], 'type':str, 'default':'mnist', 'help':'Data used for testing. "all" uses every dataset configured in tests/environment_tests/test_confs/'}
-            ]
-        
-        # Parse arguments
-        parsed_args = create_args(parser_args, add_args)
-        # Check if command to be tested is in main commands
-        if parsed_args.test_command != 'all':
-            if parsed_args.testing_data != 'all':
-                run(parsed_args.test_command, parsed_args.testing_data)
-            else:
-                print("Command test call with multiple test datasets isn't implemented yet...")
-                exit()
-
-        # Run all tests
-        else:
-            for command in get_callable_class_functions(CreateArgs):
-                if parsed_args.testing_data != 'all':
-                    run(command, parsed_args.testing_data)
-                else:
-                    for data_confs in get_callable_class_functions(test_confs):
-                        print("Command test call with multiple test datasets isn't implemented yet...")
-                
-    

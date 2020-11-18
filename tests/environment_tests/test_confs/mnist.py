@@ -5,7 +5,7 @@ dataset = Namespace(s='mnist', ff='tfds_fetch', cf=None, name='mnist')
 train = Namespace(
                     d='mnist',
                     pf='mnist',
-                    m='',
+                    m='NeuralNetworks',
                     c='mnist_basic',
                     batch_size=100,
                     epochs=1,

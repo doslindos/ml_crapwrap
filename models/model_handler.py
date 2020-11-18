@@ -4,10 +4,10 @@ class ModelHandler:
     # Necessary ?
 
     def __init__(self, dataset, model_name, conf_name):
-
-        self.training_dataset = dataset[0]
-        self.test_dataset = dataset[1]
-
+        if dataset is not None:
+            self.training_dataset = dataset[0]
+            self.test_dataset = dataset[1]
+        
         self.model = fetch_model(model_name, conf_name)
 
     def train(self, params):

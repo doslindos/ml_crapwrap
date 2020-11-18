@@ -61,8 +61,8 @@ def fetch_model(model_name, conf_name):
     # Fetch the model
     # In:
     #   path:                       str, path to the model
-
-    model_module = import_with_string('models.'+model_name+'.model')
+    
+    model_module = import_with_string("models."+model_name+".model")
     #import_module('models.'+model_name+'.model')
     return model_module.Model(conf_name)
 

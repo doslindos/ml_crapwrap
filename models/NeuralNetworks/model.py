@@ -41,6 +41,7 @@ class Model:
             learning_rate,
             loss_function='cross_entropy_w_sigmoid', 
             optimization_function='classifier',
+            debug=False
             ):
         
         if isinstance(dataset, dict):
@@ -60,17 +61,29 @@ class Model:
         
         #Dataset operations
         #Cache
-        dataset.cache()
+        #dataset.cache()
         #Batch
-        if batch_size != 0:
-            dataset = dataset.batch(batch_size, drop_remainder=False)
-        else:
-            dataset = dataset.batch(1)
+        if hasattr(dataset, 'batch'):
+            if batch_size != 0:
+                dataset = dataset.batch(batch_size, drop_remainder=False)
+            else:
+                dataset = dataset.batch(1)
 
         #Start training
-        tf_training_loop(dataset, self, loss_function, opt, optimizer, epochs, True, autoencoder=autoencoder)
+        tf_training_loop(
+                dataset, 
+                self, 
+                loss_function, 
+                opt, 
+                optimizer, 
+                epochs, 
+                True, 
+                autoencoder=autoencoder,
+                debug=False
+                )
         
-        self.save()
+        if not debug:
+            self.save()
         print("Training finished...")
 
     def handle_layers(self, x, config, name_specifier='', training=False):

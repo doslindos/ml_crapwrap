@@ -1,7 +1,7 @@
 from tests.model_tests import test_functions
 from plotting import plot_functions
 from data import data_info
-from . import config
+from . import config, models, Preprocess, run_function
 
 def GPU_config():
     # For Tensorflow GPU this prevents weird errors in initializing tensorflow
