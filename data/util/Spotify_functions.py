@@ -1,18 +1,15 @@
 from .. import SpotifyClientCredentials, Spotify, nparray, npfloat32, npappend, npsave, jsondump, exit, Path
 import importlib
-if importlib.find_loader('credentials'):
-    from credentials import Spotify_API_credentials
-    creds_found = True
-else:
-    creds_found = False
 
 class SpotifyAPI:
     # Handles spotify api features
 
     def __init__(self):
-        # Initializes spotipy api object
-        # Uses Spotify account keys defined in credential.py
-        if creds_found:
+        if importlib.find_loader('credentials'):
+            from credentials import Spotify_API_credentials
+
+            # Initializes spotipy api object
+            # Uses Spotify account keys defined in credential.py
             cc = SpotifyClientCredentials(
                 Spotify_API_credentials['client_id'], 
                 Spotify_API_credentials['secret_key']
@@ -39,17 +36,17 @@ class SpotifyAPI:
         # Out:
         #   dataset:                                list of dicts, element contains the data for a single track
 
-        def batch_data(list_type):
+        def batch_data(labels):
             for i in range(0, len(track_id_list), batch_size):
                 if labels:
                     yield list(track_id_list.keys())[i:i+batch_size]
-                elif list_type == dict:
+                else:
                     yield track_id_list[i:i+batch_size]
         
 
         #Fetch track information in batches and create dataset
         dataset = []
-        labels = True if isinstance(track_id_list,  dict) else list
+        labels = True if isinstance(track_id_list,  dict) else False
         for i, batch in enumerate(batch_data(labels)):
             #Get ids of current batch and fetch info from Spotify API
             batch_track_ids = batch
@@ -115,38 +112,33 @@ class SpotifyAPI:
 
         return dataset
     
-    def make_feature_dataset(self, track_id_list, ds_name):
+    def make_feature_dataset(self, track_id_list, save_path, filename=None):
         # Takes spotify track id list, fetches data into dataset
         # and saves data in a created folder with trackdilespath filename as a name
         # In:
         #   track_list:                         list, track spotify id list or dict, where key = track_id, value = label or labels list
-        #   ds_name:                            str, name for the dataset
-        #   labels:                             
-        # Out:
+        #   filename:                           str, name for the dataset_file
         #   save_path:                          Path object, path to saved dataset
-
-
-
-        dataset = self.fetch_track_features(track_id_list)
-        
-        save_path = Path("data", "created_datasets") 
-        if not save_path.exists():
-            save_path.mkdir()
-
-        save_path = save_path / Path(ds_name)
-        
-        if save_path.exists():
-            print("Directory exists!")
-            override = input("Do you want to override existing features?(y/n)")
-            if override == 'n':
+        if filename is None:
+            if save_path.suffix != '.json':
+                print("You must either give a filename or put it in the path")
                 exit()
-        else:
-            save_path.mkdir()
-            print("Directory ",save_path.name," created in ",save_path,"...")
+            else:
+                parent_folder = save_path.parent
+                if not save_path.exists():
+                    if not parent_folder.exists():
+                        parent_folder.mkdir()
+                        print("Directory ",parent_folder.name," created in ",parent_folder.parent,"...")
+                else:
+                    print("Directory exists!")
+                    overwrite = input("Do you want to overwrite existing features?(y/n)")
+                    if overerite != 'y':
+                        exit()
+                
+        dataset = self.fetch_track_features(track_id_list)
  
-        with save_path.joinpath(ds_name+"_dataset.json").open('w', encoding='utf8') as jf:
+        with save_path.open('w', encoding='utf8') as jf:
             jsondump(dataset, jf, ensure_ascii=False)
 
         print("Features have been saved in: ", save_path," ...")
         
-        return save_path

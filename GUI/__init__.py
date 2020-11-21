@@ -9,7 +9,10 @@ from numpy import argmax as npargmax, array as nparray, reshape as npreshape, sq
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 
-from utils.main_utils import run_function, get_dataset_info, fetch_model, dataset_generator, fetch_resource, take_image_screen, get_function_attr_values
+from utils.functions import run_function, get_function_attr_values
+from utils.datasets import get_dataset_info, dataset_generator 
+from utils.modules import fetch_model
+from utils.resources import fetch_resource, take_image_screen
+
 from .GUI_utils import build_blueprint, open_dirGUI, open_fileGUI, show_data_tk
-from data.setup_functions.data_functions import Preprocess
-from data.setup_functions import normalize
+

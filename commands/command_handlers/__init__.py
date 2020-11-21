@@ -1,5 +1,5 @@
 import argparse
-from utils.main_utils import if_callable_class_function, get_callable_class_functions
+from utils.modules import if_callable_class_function, get_callable_class_functions
 from ..command_functions.utils import validate_args, GPU_config
 
 def create_args(parser_args, add_args):

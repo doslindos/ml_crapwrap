@@ -1,16 +1,46 @@
-from . import Path, jsondump, jsonload, Counter, itemgetter, tfdsload
+from . import Path, jsondump, jsonload, Counter, itemgetter, import_module
+
+def import_error(mod, ds_name, path):
+    print("You do not have a ",mod," for ", ds_name, " in ", path)
+    print("If you want to create a dataset ", ds_name, " check out README in data folder...")
+    exit()
 
 class Dataset:
     # Handles datasets
 
-    def __init__(self, dataset_name, sub_sample=None):
+    def __init__(self, dataset_name):
         # Initial variables and dataset fetch
         # In: 
         #   dataset_name:               str, name of the dataset to be used
+        
+        # Define paths to search a fetcher and preprocesser
+        handler_path = Path("data", "handlers")
 
-        self.dataset_name = dataset_name
-        self.data_key_list = []
-        self.get_data(sub_sample)
+        # Create DataFetcher
+        if handler_path.joinpath(dataset_name, "fetch.py").exists():
+            # Convert to posix to use import module
+            fetcher = import_module("data.handlers."+dataset_name+".fetch")
+            self.data_fetcher = fetcher.DataFetcher(dataset_name)
+        else:
+            import_error("DataFetcher", dataset_name, fetcher_path)
+
+        # Create DataPreprocessor
+        if handler_path.joinpath(dataset_name, "preprocess.py").exists():
+            processor = import_module("data.handlers."+dataset_name+".preprocess")
+            self.data_preprocessor = processor.DataPreprocessor()
+        else:
+            import_error("DataPreprocessor", dataset_name, preprocessor_path)
+        
+    def load(self):
+        # Actual fetching of the data
+        self.data_fetcher.load_data()
+        
+    def fetch_raw_data(self, sub_sample=None):
+        return self.data_fetcher.get_data(sub_sample)
+
+    def fetch_preprocessed_data(self, sub_sample=None):
+        dataset = self.fetch_raw_data(sub_sample)
+        self.data_preprocessor.preprocess(dataset)
 
     def label_counts(self, key):
         #

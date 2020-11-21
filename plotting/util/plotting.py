@@ -1,4 +1,4 @@
-from . import apply_dim_reduction, results_to_nplist, exit, plt, nparray, npsum, npappend
+from .. import apply_dim_reduction, results_to_nplist, exit, plt, nparray, npsum, npappend
 
 def get_cmap(n, name='rainbow'):
     # Creates a plt colormap object which returns RGB values for the value

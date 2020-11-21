@@ -43,12 +43,8 @@ __pycache__/
 credentials.py
 
 #created datasets and creation files
-created_datasets/
-data_scripts/*
-!data_scripts/example.sql
-!data_scripts/README.md
-data_files/*
-!data_files/README.md
+data/handlers/**/dataset/
+*.sql
 *.txt
 !requirements.txt
 
