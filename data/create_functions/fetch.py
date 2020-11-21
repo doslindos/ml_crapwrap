@@ -137,12 +137,19 @@ def file_fetch(path):
                     week_ids = value['Week_ids']
                     # Take just year information from the week ids to be used as label
                     years = []
-                    for week in week_ids:
-                        years.append(week.rsplit('/', 1)[-1])
+                    months = []
+       
+       
+                    for week_id in week_ids:
+                    
+                        month, day, year = week_id.split("/")
+                        months.append(month)
+                        #years.append(week.rsplit('/', 1)[-1])
                 
                     # Count how many times the song was on top 100 list in each year
                     # Then take the year with most list occurances and use it as a label
-                    label = Counter(years).most_common(1)[0][0]
+                    #label = Counter(months).most_common(1)[0][0]
+                    label = months
                     
                     if track_id not in data.keys():
                         total_counter += 1
@@ -150,11 +157,13 @@ def file_fetch(path):
                     else:
                         double_counter += 1
                         print("Double instance... ", key, data[track_id], label)
-                        if isinstance(data[track_id], str):
-                            if label == data[track_id]:
-                                data[track_id] = [data[track_id], label]
-                        elif isinstance(data[track_id], list):
-                            data[track_id].append(label)
+                        for label in labels:
+                            data['track_id'].append(label)
+                        #if isinstance(data[track_id], str):
+                        #    if label == data[track_id]:
+                        #        data[track_id] = [data[track_id], label]
+                        #elif isinstance(data[track_id], list):
+                        #    data[track_id].append(label)
 
             print(total_counter, double_counter)
     
