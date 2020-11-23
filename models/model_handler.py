@@ -1,12 +1,16 @@
 from . import create_prediction_file, run_function, map_params, test_functions, fetch_model, get_dataset_info
 
 class ModelHandler:
-    # Necessary ?
 
-    def __init__(self, dataset, model_name, conf_name):
-        if dataset is not None:
-            self.training_dataset = dataset[0]
-            self.test_dataset = dataset[1]
+    def __init__(self, datasets, model_name, conf_name):
+        if datasets is not None:
+            if len(datasets) == 2:
+                self.training_dataset = datasets[0]
+                self.test_dataset = datasets[1]
+            elif len(datasets) == 3:
+                self.training_dataset = datasets[0]
+                self.validation_dataset = datasets[1]
+                self.test_dataset = datasets[2]
         
         self.model = fetch_model(model_name, conf_name)
 
@@ -17,7 +21,9 @@ class ModelHandler:
         #   params:                     Namespace object
 
         command_params = vars(params)
-        command_params['dataset'] = self.training_dataset
+        command_params['datasets'] = self.training_dataset
+        if hasattr(self, 'validation_dataset'):
+            command_params['datasets'] = (self.training_dataset, self.validation_dataset)
         self.model.train(**map_params(self.model.train, command_params, self.model.c))
 
     def test(self, test_type=None, results=None, train=False):
@@ -35,6 +41,7 @@ class ModelHandler:
             if train:
                 dataset = self.training_dataset
             else:
+                print("HEP")
                 dataset = self.test_dataset
             
             results = create_prediction_file(path, dataset, self.model, train=train)

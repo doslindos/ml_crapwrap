@@ -40,7 +40,7 @@ class Dataset:
 
     def fetch_preprocessed_data(self, sub_sample=None):
         dataset = self.fetch_raw_data(sub_sample)
-        self.data_preprocessor.preprocess(dataset)
+        return self.data_preprocessor.preprocess(dataset)
 
     def label_counts(self, key):
         #

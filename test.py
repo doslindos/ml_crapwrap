@@ -1,6 +1,6 @@
 from sys import argv, exit
 from commands.command_handlers.test import TestArgs
-from utils.main_utils import get_callable_class_functions
+from utils.modules import get_callable_class_functions
 
 if __name__ == '__main__':
     

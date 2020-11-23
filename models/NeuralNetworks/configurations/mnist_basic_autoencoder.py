@@ -10,7 +10,7 @@ conf = {
     
     'input_shape':[28, 28, 1],
     'data_type':'float32',
-    
+    'output_shape':[1, 28, 28, 1],   
     'encoder':{
         'layers':{
             'Dense': {

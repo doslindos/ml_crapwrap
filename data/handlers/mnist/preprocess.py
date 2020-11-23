@@ -4,11 +4,11 @@ class DataPreprocessor:
 
     def preprocess_set(self, the_set):
         # Preprocesses every instance in the set with normalize image function
-        return the_set.map(normalize_image, num_parallel_calls=tfdata.experimental.AUTOTUNE)
+        the_set = the_set.map(normalize_image, num_parallel_calls=tfdata.experimental.AUTOTUNE)
+        return the_set
 
     def preprocess(self, dataset):
-            
-        if isinstance(dataset, tuple):
+        if isinstance(dataset, list):
             train, validation, test = dataset
         
             # Preprocess the datasets

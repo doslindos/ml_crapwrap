@@ -1,4 +1,4 @@
-from .. import tfdata, npsave, npload, nparray, npappend, npexpand, datetime, Path, jsondump, jsonload, pkldump, pklload, signature, open_dirGUI, getcwd, argmax, import_with_string
+from .. import tfdata, npsave, npload, nparray, npappend, npexpand, datetime, Path, jsondump, jsonload, pkldump, pklload, signature, open_dirGUI, getcwd, argmax, get_module
 
 def create_folder(path):
     # Creates an folder if it doesn't exist
@@ -163,7 +163,7 @@ def handle_init(model, path, confs):
             
             #print(dir(confs))
             #print(confs.__path__)
-            configurations = import_with_string(confs.__name__+'.'+path)
+            configurations = get_module(confs.__name__+'.'+path)
             model.conf_name = path
             model.load_path = None
             model.c = configurations.conf

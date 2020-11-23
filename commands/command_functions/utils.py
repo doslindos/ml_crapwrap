@@ -1,7 +1,8 @@
 from tests.model_tests import test_functions
 from plotting import plot_functions
 from data import data_info
-from . import config, models, Preprocess, run_function
+from data.dataset import Dataset
+from . import config, run_function, select_weights, read_prediction_file, ModelHandler, load_data
 
 def GPU_config():
     # For Tensorflow GPU this prevents weird errors in initializing tensorflow
@@ -28,12 +29,12 @@ def get_predictions_dict(model_name, datatype):
     # Tries to get a saved file with model output and true label values
     # This file is created so that the model doesn't have to run every time it is tested
     #Select model
-    selected_model = models.utils.model_handling_functions.select_weights(model_name)
-    return (models.utils.model_handling_functions.read_prediction_file(selected_model, train=datatype), selected_model)
+    selected_model = select_weights(model_name)
+    return (read_prediction_file(selected_model, train=datatype), selected_model)
 
 def setup_results(parsed, make_results=True):
-    train = parse_dataset_type(parsed.dataset_type)
-    results, selected_model = get_predictions_dict(parsed.m, train)   
+    dset = parse_dataset_type(parsed.dataset_type)
+    results, selected_model = get_predictions_dict(parsed.m, dset)   
 
     if results or not make_results:
         model = (parsed.m, selected_model)
@@ -42,22 +43,15 @@ def setup_results(parsed, make_results=True):
     else:
         print("Creating predictions file...")
         
-        #Preprocess dataset
-        if parsed.pf is None:
-            preprocess_function = parsed.d
-        else:
-            preprocess_function = parsed.pf
-        
-        prep_pipe = Preprocess()
-        run_function(
-                prep_pipe, 
-                preprocess_function, 
-                {'dataset_name':parsed.d, 'sub_sample':parsed.sub_sample})
+        # Load data
+        dataset = load_data(parsed.d)
 
-        model_handler = models.ModelHandler(prep_pipe.preprocessed_dataset, parsed.m, selected_model)
+        train, validation, test = dataset.fetch_preprocessed_data(parsed.sub_sample)
+        
+        model_handler = ModelHandler((train, validation, test), parsed.m, selected_model)
         
         #Run test
-        results = model_handler.test(parsed.test, None, train=train)
+        results = model_handler.test(parsed.test, None, train=dset)
         model = model_handler.model
         
     return (results, model)

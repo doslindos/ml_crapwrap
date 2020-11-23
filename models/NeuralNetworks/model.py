@@ -35,7 +35,7 @@ class Model:
             self.bias[layer_name] = biases.item().get(layer_name)
 
     def train(self,
-            dataset,
+            datasets,
             batch_size, 
             epochs, 
             learning_rate,
@@ -44,8 +44,11 @@ class Model:
             debug=False
             ):
         
-        if isinstance(dataset, dict):
-            dataset = tfdata.Dataset.from_tensor_slices({'x':dataset['x'], 'y':dataset['y']})
+        if isinstance(datasets, tuple):
+            train, validate = datasets
+        else:
+            train = datasets
+            validate = None
 
         #Define optimizer
         optimizer = tfoptimizers.Adam(learning_rate)
@@ -63,15 +66,15 @@ class Model:
         #Cache
         #dataset.cache()
         #Batch
-        if hasattr(dataset, 'batch'):
-            if batch_size != 0:
-                dataset = dataset.batch(batch_size, drop_remainder=False)
-            else:
-                dataset = dataset.batch(1)
+        if batch_size != 0:
+            train = train.batch(batch_size, drop_remainder=False)
+        else:
+            train = train.batch(1)
 
         #Start training
         tf_training_loop(
-                dataset, 
+                train,
+                validate,
                 self, 
                 loss_function, 
                 opt, 

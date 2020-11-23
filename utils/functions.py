@@ -1,4 +1,3 @@
-
 from inspect import signature
 
 def get_function_attr_values(function, attrs=None):

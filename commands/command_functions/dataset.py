@@ -1,12 +1,4 @@
-from . import run_function, Dataset
-from data.create_functions import fetch, create
-
-def load_data(name):
-    # Initialize Dataset
-    dataset = Dataset(parsed.d)
-    # Load the data
-    dataset.load()
-    return dataset
+from . import run_function, Dataset, load_data
 
 def create_dataset(parsed):
     load_data(parsed.d)
@@ -15,9 +7,12 @@ def dataset_information(parsed):
     # Untested
     
     dataset = load_data(parsed.d)
+    data = dataset.fetch_raw_data(parsed.sub_sample)
 
  #   if parsed.merge_key is not None:
  #       dataset.merge_duplicates(parsed.merge_key)
     # Run the function user is defined and feed inputs
-    run_function( data_info, parsed.info, {'dataset':dataset, 'label_key':parsed.l})
-
+    if if_callable_class_function(data_info, parsed.info);
+        run_function( data_info, parsed.info, {'dataset':dataset, 'label_key':parsed.l})
+    else.
+        print("Function ", parsed.info, " not found in data/data_info.py")
