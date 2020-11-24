@@ -20,17 +20,8 @@ class DataFetcher:
     def get_data(self, sample=None):
         # Wrap the dataset into a Tensorflow Dataset object
         if sample is not None:
-            sample = rndsample(self.dataset, sample)
+            return rndsample(self.dataset, sample)
         else:
-            sample = self.dataset
+            return self.dataset
         
-        # Split dataset
-        train, validation, test = split_dataset(sample['features'], sample['popularity'], 0.33, True, 0.15)
-        
-        # Wrap to tf dataset
-        train = tfdata.from_tensor_slices((train[0], train[1]))
-        test = tfdata.from_tensor_slices((test[0], test[1]))
-        train = tfdata.from_tensor_slices((validation[0], validation[1]))
-
-        return (train, validation, test)
         

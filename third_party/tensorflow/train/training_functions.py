@@ -78,11 +78,11 @@ def tf_training_loop(
         output_shape = None
 
     for epoch in range(epochs):
+        print(train.cardinality())
         for step, batch_x in enumerate(train):
             x, y = parse_sample(batch_x, output_shape, onehot)
             if autoencoder:
                 y = x
-
             loss = optimization_function(
                     model, 
                     x, 
@@ -94,7 +94,7 @@ def tf_training_loop(
             
             if validation is not None:
                 total_val_loss = 0
-                for batch in validation.batch(validation.__len__()):
+                for batch in validation.batch(validation.cardinality().numpy()):
                     x, y = parse_sample(batch, output_shape, onehot)
                     if autoencoder:
                         y = x

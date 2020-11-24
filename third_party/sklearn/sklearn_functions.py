@@ -15,7 +15,7 @@ def split_dataset(data, labels, test_size, make_shuffle=True, validation=None):
         #Shuffle the dataset
         data, labels = shuffle(data, labels)
    
-    x_train, x_test, y_train, y_test = train_test_split(data, labels, test_size=train_size, stratify=labels)
+    x_train, x_test, y_train, y_test = train_test_split(data, labels, test_size=test_size, stratify=labels)
     
 
     if validation is not None:

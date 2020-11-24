@@ -36,6 +36,7 @@ class Dataset:
         self.data_fetcher.load_data()
         
     def fetch_raw_data(self, sub_sample=None):
+        # Fetches the unpreprocessed data
         return self.data_fetcher.get_data(sub_sample)
 
     def fetch_preprocessed_data(self, sub_sample=None):

@@ -15,7 +15,7 @@ def spotify_api_fetch(data, save_path, filename=None):
     input_check(save_path, [Path], "save_path in spotify_api_fetch")
 
     api = SpotifyAPI()
-    api.make_feature_dataset(data, filename, save_path)
+    api.make_feature_dataset(data, save_path, filename)
 
 def load_with_tfds_load(
         dataset_name, 

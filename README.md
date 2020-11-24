@@ -62,13 +62,13 @@ Prediction is right when the top and the right numbers match. So for example the
 <br />Some working default training commands:
 <br />MNIST:
 <br />Train a dense mnist image classifier:
-<br />`python main.py train -d mnist -c mnist_dense`
+<br />`python create.py train -d mnist -c mnist_dense`
 <br />Train a convolutional-dense mnist image classifier:
-<br />`python main.py train -d mnist -c mnist_conv`
+<br />`python create.py train -d mnist -c mnist_conv`
 <br />Train a dense mnist image autoencoder:
-<br />`python main.py train -d mnist -c mnist_basic_autoencoder`
+<br />`python create.py train -d mnist -c mnist_basic_autoencoder`
 <br />Train a convolutional-dense mnist image autoencoder:
-<br />`python main.py train -d mnist -c mnist_conv_autoencoder`
+<br />`python create.py train -d mnist -c mnist_conv_autoencoder`
 
 #TODO
 More visual demonstrations...

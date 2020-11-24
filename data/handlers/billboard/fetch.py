@@ -9,7 +9,7 @@ class DataFetcher:
     def load_data(self):
         if not self.save_path.exists():
             json_data = jsonload(Path("data", "handlers", "billboard", "resources", "billboard.json").open('r', encoding='utf-8'))
-    
+            
             # Create a data dict with key = track id and value = labels
             data = {}
             for key, value in json_data.items():
@@ -24,9 +24,11 @@ class DataFetcher:
                     
                         month, day, year = week_id.split("/")
                         months.append(month)
+                        # Because years are from 1958-2019 take only last two digits
+                        years.append(year[2:])
             
                     # Count how many times the song was on top 100 list in each year
-                    labels = months
+                    labels = years
                 
                     if track_id not in data.keys():
                         data[track_id] = labels
@@ -42,15 +44,7 @@ class DataFetcher:
     def get_data(self, sample=None):
         # Wrap dataset into tensorflow dataset object
         if sample is not None:
-            sample = rndsample(self.dataset, sample)
+            return rndsample(self.dataset, sample)
         else:
-            sample = self.dataset
+            return self.dataset
         
-        train, validation, test = split_dataset(sample['features'], sample['labels'], 0.33, True, 0.15 )
-        
-        # Wrap to tf dataset
-        train = tfdata.from_tensor_slices((train[0], train[1]))
-        test = tfdata.from_tensor_slices((test[0], test[1]))
-        train = tfdata.from_tensor_slices((validation[0], validation[1]))
-
-        return (train, validation, test)

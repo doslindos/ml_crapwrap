@@ -12,7 +12,7 @@ def dataset_information(parsed):
  #   if parsed.merge_key is not None:
  #       dataset.merge_duplicates(parsed.merge_key)
     # Run the function user is defined and feed inputs
-    if if_callable_class_function(data_info, parsed.info);
+    if if_callable_class_function(data_info, parsed.info):
         run_function( data_info, parsed.info, {'dataset':dataset, 'label_key':parsed.l})
-    else.
+    else:
         print("Function ", parsed.info, " not found in data/data_info.py")

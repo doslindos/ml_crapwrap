@@ -1,22 +1,23 @@
-# Models for Spotify features
+
+# Models for Spotify features of billboard list songs
 
 conf = {
     'train_params':{
         'batch_size':100, 
-        'epochs':1, 
-        'learning_rate':0.0001, 
+        'epochs':5, 
+        'learning_rate':0.001, 
         'loss_function':'cross_entropy',
         'optimization_function':'classifier'
         },
     'input_shape':[12],
     'data_type':'float32',
-    'output_shape':[10],
+    'output_shape':[12],
     'layers':{
         'Dense': {
-            'weights':[100, 100, 10],
+            'weights':[100, 12],
             'use_bias':True,
-            'activations':['relu', 'relu', 'softmax'],
-            'dropouts':[0.2, 0.2, None]
+            'activations':['relu', None],
+            'dropouts':[None, None]
         },
     },
 

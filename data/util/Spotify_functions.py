@@ -1,5 +1,6 @@
 from .. import SpotifyClientCredentials, Spotify, nparray, npfloat32, npappend, npsave, jsondump, exit, Path
 import importlib
+from collections import Counter
 
 class SpotifyAPI:
     # Handles spotify api features
@@ -95,15 +96,11 @@ class SpotifyAPI:
                     track_labels = track_id_list[track_data['id']]
                     if isinstance(track_labels, str):
                         track_data['labels'] = track_labels
-                        tracks.append(track_data)
-                    # For multiple labels make double instances
+                    # For multiple labels take most common value
                     elif isinstance(track_labels, list):
-                        for track_label in track_labels:
-                            track_copy = track_data.copy()
-                            track_copy['labels'] = track_label
-                            tracks.append(track_copy)
-                else:
-                    tracks.append(track_data)
+                        track_data['labels'] = Counter(track_labels).most_common(1)[0][0]
+                
+                tracks.append(track_data)
                 
                 # Add track to dataset
                 for track in tracks:
@@ -119,6 +116,7 @@ class SpotifyAPI:
         #   track_list:                         list, track spotify id list or dict, where key = track_id, value = label or labels list
         #   filename:                           str, name for the dataset_file
         #   save_path:                          Path object, path to saved dataset
+        
         if filename is None:
             if save_path.suffix != '.json':
                 print("You must either give a filename or put it in the path")
