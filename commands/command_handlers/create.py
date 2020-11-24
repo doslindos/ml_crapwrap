@@ -14,10 +14,7 @@ class CreateArgs:
             parser_args = {'description':'Create a dataset'}
             add_args = [
                 {'name':['command'], 'type':str, 'help':'Main command'},
-                {'name':['-s'], 'type':str, 'required':True, 'help':'Path to the script in data_script folder, to the excel file in data_file folder or name of the dataset (tensroflow-dataset "tfds_fetch")'},
-                {'name':['-ff'], 'type':str, 'required':True, 'help':'Data fetch function'},
-                {'name':['-cf'], 'type':str, 'default':None, 'help':'Create function'},
-                {'name':['-name'], 'type':str, 'default':None, 'help':'Name of the dataset'},
+                {'name':['-d'], 'type':str, 'required':True, 'help':'Path to the script in data_script folder, to the excel file in data_file folder or name of the dataset (tensroflow-dataset "tfds_fetch")'},
                 ]
             # Parse arguments
             parsed_args = create_args(parser_args, add_args)

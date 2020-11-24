@@ -2,6 +2,9 @@ from . import configurations
 
 from .. import tfdata, tfoptimizers, tfreshape, exit, Path, optimization, loss_functions, test_functions, Layer_Handler, tf_training_loop, save_configuration, save_weights, load_weights, load_configuration, handle_init, npprod
 
+# THIS IS NOT IMPLEMENTED YET
+# I JUST COPIED THIS FROM NEURALNETWORKS HERE AS A TEMPLATE
+
 class Model:
 
     def __init__(self, conf_name):

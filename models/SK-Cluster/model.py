@@ -2,6 +2,9 @@ from . import configurations
 
 from .. import handle_init, save_configuration, save_sk_model, load_configuration, load_sk_model, test_functions, skcluster, Path, nparray, npprod
 
+# UNTESTED 
+# UNIMPLEMENTED JUST A READY TEMPLATE
+
 class Model:
 
     def __init__(self, conf_name):

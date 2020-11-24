@@ -39,7 +39,8 @@ In commandline:
 6. Activate the created virtualenv<br />in **Mac and Linux**<br />`source env/bin/activate`<br />in **Windows**<br />`env\Scripts\activate`
 <br />If (env) appeared in the most left corner of the commandline it means that the virtualenv is activated.
 7. You can check that your virtualenv python version is the one you want<br />`python --version`
-8. If everything is in order, install packages with pip<br />`pip install -r requirements.txt`
+8. **Before installing packages with pip, go to requirements.txt file and uncomment the version of tensorflow you want to use!**<br />If you do not have GPU support installed, use "tensorflow". 
+9. If everything is in order, install packages with pip<br />`pip install -r requirements.txt`
 <br />If packages were installed without errors installation is done.<br />Now you can tap yourself on the shoulder and jump to the **Quick test guide**!
 
 # Quick test guide

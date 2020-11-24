@@ -1,4 +1,4 @@
-from . import npargmax, npeye, set_printoptions, nparray, cast, sklearn_functions, exit, display_confusion_matrix, Model_tester
+from . import npargmax, npeye, set_printoptions, nparray, cast, sklearn_functions, exit, display_confusion_matrix, ModelTester
 
 def classification_test(results, model, from_results=True):
     # Classification test
@@ -49,10 +49,10 @@ def accuracy(results, model, from_results=True):
         print("Wrong predictions: ", wrong)
 
 
-def testing_gui(model, preprocess_function, results=None):
+def testing_gui(model, results=None):
     # Opens testing GUI
     # In:
     #   results:                dict, label - model output pairs (Not used, just for quick fix)
     #   model:                  model object, model to be used
     
-    Model_tester(model, preprocess_function)
+    ModelTester(model)

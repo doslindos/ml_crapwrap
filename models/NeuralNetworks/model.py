@@ -63,8 +63,6 @@ class Model:
         opt = getattr(optimization, optimization_function)
         
         #Dataset operations
-        #Cache
-        #dataset.cache()
         #Batch
         if batch_size != 0:
             train = train.batch(batch_size, drop_remainder=False)

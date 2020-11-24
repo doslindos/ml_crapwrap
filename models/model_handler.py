@@ -41,7 +41,6 @@ class ModelHandler:
             if train:
                 dataset = self.training_dataset
             else:
-                print("HEP")
                 dataset = self.test_dataset
             
             results = create_prediction_file(path, dataset, self.model, train=train)

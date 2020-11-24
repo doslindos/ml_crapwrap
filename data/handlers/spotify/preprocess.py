@@ -49,7 +49,7 @@ class DataPreprocessor:
             popularity = d['popularity']
 
             popularities.append(popularity)
- 
+        
         # Apply scaling
         features = self.preprocess_features(features)
         labels = self.preprocess_labels(popularities)

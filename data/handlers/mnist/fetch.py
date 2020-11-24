@@ -8,7 +8,7 @@ class DataFetcher:
 
     def load_data(self):
         # Fetch data from online with tfds_load function
-        self.dataset = load_with_tfds_load(self.ds_name, self.save_path, split=['train+test[:80]', 'train+test[80:90]', 'test[90:]'], as_supervised=True)
+        self.dataset = load_with_tfds_load(self.ds_name, self.save_path, split=['train[:85%]', 'train[85%:]', 'test'], as_supervised=True)
 
     def get_data(self, sample=None):
         if sample is None:
