@@ -11,7 +11,6 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 
 from utils.functions import run_function, get_function_attr_values
 from utils.datasets import get_dataset_info, dataset_generator 
-from utils.modules import fetch_model
 from utils.resources import fetch_resource, take_image_screen
 
 from .GUI_utils import build_blueprint, open_dirGUI, open_fileGUI, show_data_tk

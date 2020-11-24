@@ -23,6 +23,7 @@ class Model:
         b = self.bias
 
         path = Path('models/RNN/saved_models/')
+        # TODO SAVE PATH
         path = save_weights(w, b, path.joinpath(self.conf_name))
         save_configuration(self.c, self.conf_name, path)
     

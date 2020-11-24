@@ -20,7 +20,11 @@ class Model:
         b = self.bias
 
         path = Path('models/NeuralNetworks/saved_models/')
-        path = save_weights(w, b, path.joinpath(self.conf_name))
+        path = save_weights(w, b, path.joinpath(
+                                        self.conf_class_name[0], 
+                                        self.conf_class_name[1], 
+                                        self.conf_name)
+                                        )
         save_configuration(self.c, self.conf_name, path)
     
     def load(self, path):

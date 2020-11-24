@@ -13,7 +13,7 @@ def open_dirGUI(init_path):
     root.destroy()
     return final_path
 
-def open_fileGUI(init_path):
+def open_fileGUI(init_path, filetypes=(("all files", "*.*"), )):
     # Creates a GUI for selecting folder path and returns the file
     # In:
     #   init_path:                          str, name of the initial search path
@@ -22,7 +22,7 @@ def open_fileGUI(init_path):
 
     root = Tk()
     root.withdraw()
-    final_path = Path(filedialog.askopenfilename(initialdir=init_path, filetypes=(("jpg files", "*.jpg"), ("png files", "*.png"), ("all files", "*.*"))))
+    final_path = Path(filedialog.askopenfilename(initialdir=init_path, filetypes=filetypes))
     root.destroy()
     return final_path
 

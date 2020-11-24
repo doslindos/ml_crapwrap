@@ -48,6 +48,7 @@ def save_weights(weights, biases, path):
     now = datetime.now()
     
     #Create weights folder in <dirname> directory
+    create_folder(path.parent.parent)
     create_folder(path.parent)
     create_folder(path)
 
@@ -155,25 +156,26 @@ def handle_init(model, path, confs):
             #Load model
             model.load_path = load_path
             model.load(load_path)
+        else:
+            print("Path is not a dircetory...")
+            exit()
     
-    if isinstance(path, str):
+    if isinstance(path, Path):
         # Handle initalization with path as string
         # This should be invoked when creating a new model (train)
-        if path != 'load':
-            
-            #print(dir(confs))
-            #print(confs.__path__)
-            configurations = get_module(confs.__name__+'.'+path)
-            model.conf_name = path
+        if path.is_file():
+            c = get_module(path)
+            model.conf_class_name = path.parts[-3:-1]
+            model.conf_name = path.stem
             model.load_path = None
-            model.c = configurations.conf
+            model.c = c.conf
         # If path is load user is shown weight selection interface
+        elif path.is_dir():
+            load(path)
+        # If path is not a string it is assumed to be a path for the weights
         else:
             path = Path(select_weights(path))
             load(path)
-    # If path is not a string it is assumed to be a path for the weights
-    else:
-        load(path)
 
 def read_prediction_file(path, prediction_filename='label_output.pkl', train=False):
     # Reads prediction file
