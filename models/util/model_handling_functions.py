@@ -1,4 +1,4 @@
-from .. import tfdata, npsave, npload, nparray, npappend, npexpand, datetime, Path, jsondump, jsonload, pkldump, pklload, signature, open_dirGUI, getcwd, argmax, get_module
+from .. import npsave, npload, nparray, npappend, npexpand, datetime, Path, jsondump, jsonload, signature, open_dirGUI, getcwd, argmax, get_module, pkldump, pklload
 
 def create_folder(path):
     # Creates an folder if it doesn't exist
@@ -235,10 +235,7 @@ def create_prediction_file(path, dataset, model, prediction_filename='label_outp
 
     results = {}
 
-    if isinstance(dataset, dict):
-        dataset = tfdata.Dataset.from_tensor_slices((dataset['x'], dataset['y']))
-    
-    for batch in dataset.batch(100):
+    for batch in dataset.batch(dataset.cardinality()):
         x = batch[0]
         y = batch[1]
         out = model.run(**map_params(model.run, {'x':x, 'training':False}))

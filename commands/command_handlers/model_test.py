@@ -2,7 +2,7 @@ from . import validate_args, GPU_config, create_args, if_callable_class_function
 from ..command_functions.plot import plot_model
 from ..command_functions.test import test_model
 
-class TestArgs:
+class ModelTestArgs:
     
     def data():
         #Defines data information function inputs and calls argument parser

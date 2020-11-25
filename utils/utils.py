@@ -9,6 +9,10 @@ def list_files_in_folder(folder_path, suffix='*.py'):
     files = Path(folder_path).rglob(suffix)
     return [f.name.split('.')[0] for f in files]
 
+def list_subfolder_in_folder(folder_path):
+    content = folder_path.glob('*/')
+    return [c for c in content if c.is_dir()]
+
 def results_to_nplist(results):
     if isinstance(results, dict):
         labels = []

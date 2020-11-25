@@ -1,4 +1,5 @@
-from . import create_prediction_file, run_function, map_params, test_functions, fetch_model, get_dataset_info
+from . import create_prediction_file, run_function, map_params, fetch_model, get_dataset_info
+from tests.model_tests import test_functions
 
 class ModelHandler:
 

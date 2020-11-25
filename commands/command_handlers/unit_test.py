@@ -1,81 +1,36 @@
 from . import create_args, if_callable_class_function, get_callable_class_functions
-from .create import CreateArgs
-import models
-from third_party.tensorflow.test import util
+#from third_party.tensorflow.test import util
 from importlib.util import find_spec
 from importlib import import_module
 import traceback
+from tests.environment_tests import dataset_handler
 
-class FunctionTestArgs:
+class UnitTestArgs:
     
-    def test_create_command():
-        
-        conf_loaction = "tests.environment_tests.test_confs."
-
-        def run(command, data):
-
-            # Check if command to be tested is in main commands
-            if if_callable_class_function(CreateArgs, command):
-                
-                # Get test configuration
-                if find_spec(conf_loaction+data) is not None:
-                    
-                    # Get the configuration file
-                    arg_conf_file = import_module(conf_loaction+ data)
-                    
-                    # Get the right configuration
-                    if hasattr(arg_conf_file, command):
-                    
-                        arg_conf = getattr(arg_conf_file, command)
-                        # Finally run the function
-                        try:
-                            getattr(CreateArgs, command)(arg_conf)
-                            print("Function "+command+" with "+data+" works...")
-                        except Exception as e:
-                            print(traceback.print_exception(e))
-                            print(e)
-                            print("Function "+command+" with "+data+" doesn't work!")
-
-                    
-                    else:
-                        print("The configuration file: ", data, " did not have a configuration called: ", command)
-
-                else:
-                    print("No configuration found for ", data)
-            
-            else:
-                print("Command not found... \nUsable commands to test: ",get_callable_class_functions(CreateArgs)," ")
-        
-
+    def test_dataset_handler():
         #Defines test function inputs and calls argument parser
-        parser_args = {'description':'Test a creating command (dataset and model creation)'}
+        parser_args = {'description':'Unit test for DatasetHandler object'}
         
         add_args = [
             {'name':['command'], 'type':str, 'help':'Main command'},
-            {'name':['-test_command'], 'type':str, 'required':True, 'help':'Name of the command to be tested, use "all" to test all commands'},
-            # TODO Rework configurations folder location to get confs by name for example mnist
-            #{'name':['-testing_model'], 'type':str, 'default':'NeuralNetworks', 'help':'Data used for testing. "all" tests every configured model in models'}
-            {'name':['-testing_data'], 'type':str, 'default':'mnist', 'help':'Data used for testing. "all" uses every dataset configured in tests/environment_tests/test_confs/'}
+            {'name':['-test'], 'type':str, 'required':True, 'help':'Name of the command to be tested, use "all" to test all commands'},
             ]
         
         # Parse arguments
         parsed_args = create_args(parser_args, add_args)
-        # Check if command to be tested is in main commands
-        if parsed_args.test_command != 'all':
-            if parsed_args.testing_data != 'all':
-                run(parsed_args.test_command, parsed_args.testing_data)
+        # Check if test is callable
+        print(dir(dataset_handler))
+        tests = dataset_handler.test
+        if parsed_args.test != 'all': 
+            if if_callable_class_function(tests, parsed_args.test):
+                run(parsed_args.test, parsed_args.testing_data)
             else:
-                print("Command test call with multiple test datasets isn't implemented yet...")
+                print("Could not find test ",parsed_args.test,"... \nThese are callable ",get_callable_class_functions(tests))
                 exit()
 
         # Run all tests
         else:
-            for command in get_callable_class_functions(CreateArgs):
-                if parsed_args.testing_data != 'all':
-                    run(command, parsed_args.testing_data)
-                else:
-                    for data_confs in get_callable_class_functions(test_confs):
-                        print("Command test call with multiple test datasets isn't implemented yet...")
+            print("Not yet done")
 
     def test_tensorflow_model_functions():
 

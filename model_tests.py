@@ -1,11 +1,11 @@
 from sys import argv, exit
-from commands.command_handlers.test import TestArgs
+from commands.command_handlers.test import ModelTestArgs
 from utils.modules import get_callable_class_functions
 
 if __name__ == '__main__':
     
     # Get all callable arguments
-    callable_functions = get_callable_class_functions(TestArgs)
+    callable_functions = get_callable_class_functions(ModelTestArgs)
     
     # Check for arguments
     if len(argv) < 2:
@@ -16,6 +16,6 @@ if __name__ == '__main__':
     maincommand = argv[1]
     # If main command is usable call it
     if maincommand in callable_functions:
-        getattr(TestArgs, maincommand)()
+        getattr(ModelTestArgs, maincommand)()
     else:
         print("Command is not recognized. \nUsable commands ",callable_functions," example: python test.py test_model [options]")
