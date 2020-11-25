@@ -1,7 +1,6 @@
 from tests.model_tests import test_functions
 from plotting import plot_functions
 from data import data_info
-from data.dataset import Dataset
 from . import config, run_function, select_weights, read_prediction_file, ModelHandler, load_data
 
 def GPU_config():

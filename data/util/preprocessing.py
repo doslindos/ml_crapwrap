@@ -1,4 +1,4 @@
-from .. import tfds_load, tfcast, nparray, tffloat32
+from tensorflow import cast as tfcast, float32 as tffloat32
 
 def normalize_image(data, label=None):
     return tfcast(data, tffloat32) / 255., label

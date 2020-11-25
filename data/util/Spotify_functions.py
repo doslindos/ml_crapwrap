@@ -1,5 +1,7 @@
-from .. import SpotifyClientCredentials, Spotify, nparray, npfloat32, npappend, npsave, jsondump, exit, Path
+from .. import nparray, npfloat32, npappend, npsave, jsondump, exit, Path
 import importlib
+from spotipy import Spotify
+from spotipy.oauth2 import SpotifyClientCredentials
 from collections import Counter
 
 class SpotifyAPI:

@@ -5,7 +5,7 @@ def import_error(mod, ds_name, path):
     print("If you want to create a dataset ", ds_name, " check out README in data folder...")
     exit()
 
-class Dataset:
+class DatasetHandler:
     # Handles datasets
 
     def __init__(self, dataset_name):

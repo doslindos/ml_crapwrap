@@ -21,7 +21,6 @@ class CreateArgs:
         else:
             parsed_args = args
 
-        GPU_config()
         # Validate input arguments
         validate_args(vars(parsed_args))
         # Run function

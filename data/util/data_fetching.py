@@ -1,6 +1,8 @@
-from .. import tfds_load, Path, input_check, path_check
+from .. import Path, input_check, path_check
 from .MySql import MySQL_Connector
 from .Spotify_functions import SpotifyAPI
+from tensorflow_datasets import load as tfds_load
+from csv import reader as csv_reader
 
 def spotify_api_fetch(data, save_path, filename=None):
     # Creates a dataset with track_features

@@ -1,4 +1,4 @@
-from . import run_function, Dataset, load_data
+from . import run_function, load_data
 
 def create_dataset(parsed):
     load_data(parsed.d)

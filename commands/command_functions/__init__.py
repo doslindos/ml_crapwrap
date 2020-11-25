@@ -1,4 +1,4 @@
-from data import Dataset, data_info
+from data import DatasetHandler, data_info
 from models import ModelHandler, select_weights, read_prediction_file
 from tests.model_tests import test_functions
 from utils.functions import run_function
@@ -8,7 +8,7 @@ from pathlib import Path
 
 def load_data(name):
     # Initialize Dataset
-    dataset = Dataset(name)
+    dataset = DatasetHandler(name)
     # Load the data
     dataset.load()
     return dataset

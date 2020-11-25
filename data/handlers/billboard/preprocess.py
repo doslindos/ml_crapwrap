@@ -1,10 +1,18 @@
 from .. import tfdata, preprocess_spotify_features, split_dataset
 from sklearn.preprocessing import MinMaxScaler
 from third_party.scipy.util import print_description
-from numpy import array as nparray
+from numpy import array as nparray, unique as npunique
 
 class DataPreprocessor:
 
+    def check_unique(self, features):
+        uniques, indexes, counts = npunique(features, return_index=True, return_counts=True, axis=0)
+        duplicate_indexes = [i for i, dupli in enumerate(features) if i not in indexes]
+        print(len(duplicate_indexes))
+        print(uniques.shape, indexes)
+        print(features.shape)
+        return (uniques, duplicate_indexes, indexes)
+    
     def preprocess_features(self, features):
         # Duration to scale 0 to 1
         if not hasattr(self, 'feature_scaler'):
@@ -44,7 +52,20 @@ class DataPreprocessor:
             label = d['labels']
 
             labels.append(int(label))
- 
+
+        features = nparray(features, dtype="float32")
+        features, duplicate_indexes, selected_indexes = self.check_unique(features)
+        if len(duplicate_indexes) > 1:
+            labels = [l for i, l in enumerate(labels) if i in selected_indexes]
+        
+            duplicate_instances = []
+            for i, d in enumerate(dataset):
+                if i in duplicate_indexes:
+                    duplicate_instances.append(d)
+        else:
+            print("No duplicates ", duplicate_indexes)
+        print([d['name'] for d in duplicate_instances])
+        
         # Apply scaling
         features = self.preprocess_features(features)
         labels = self.preprocess_labels(labels)

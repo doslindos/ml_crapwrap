@@ -1,4 +1,4 @@
-from . import build_histogram
+from plotting.util.plotting import build_histogram
 
 def frequencies(dataset, label_key):
     # Plots frequencies of a dataset by label

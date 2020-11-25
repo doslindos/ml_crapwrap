@@ -27,7 +27,6 @@ class TestArgs:
         add_args = [
             {'name':['command'], 'type':str, 'help':'Main command'},
             {'name':['-d'], 'type':str, 'required':True, 'help':'Dataset name'},
-            {'name':['-pf'], 'type':str, 'default':None, 'help':'Name for the preprocessing function'},
             {'name':['-m'], 'type':str, 'default':"NeuralNetworks", 'help':'Model name'},
             {'name':['-test'], 'type':str, 'required':True, 'help':'Test type'},
             {'name':['-t'], 'type':int, 'default':None, 'help':'Test set size'},
