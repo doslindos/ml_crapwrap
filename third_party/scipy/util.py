@@ -1,6 +1,7 @@
 from scipy.stats import describe
 from numpy import set_printoptions
 set_printoptions(suppress=True)
+
 def print_description(x):
     desc_x = describe(x)
 

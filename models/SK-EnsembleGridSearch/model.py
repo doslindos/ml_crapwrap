@@ -1,6 +1,6 @@
 from . import configurations
 
-from .. import handle_init, save_configuration, save_sk_model, load_configuration, load_sk_model, test_functions, Path, nparray, npprod
+from .. import handle_init, save_configuration, save_sk_model, load_configuration, load_sk_model, Path, nparray, npprod
 
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import classification_report, accuracy_score

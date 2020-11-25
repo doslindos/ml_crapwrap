@@ -1,6 +1,13 @@
 from . import configurations
 
-from .. import tfdata, tfoptimizers, tfreshape, exit, Path, optimization, loss_functions, test_functions, Layer_Handler, tf_training_loop, save_configuration, save_weights, load_weights, load_configuration, handle_init, npprod
+from .. import exit, Path, save_configuration, save_weights, load_weights, load_configuration, handle_init, npprod
+
+from tensorflow import data as tfdata, optimizers as tfoptimizers, reshape as tfreshape
+
+#from third_party.tensorflow.build.layer_build_functions import Layer_Handler 
+#from third_party.tensorflow.train.training_functions import tf_training_loop 
+#from third_party.tensorflow.train import optimization, loss_functions
+
 
 # THIS IS NOT IMPLEMENTED YET
 # I JUST COPIED THIS FROM NEURALNETWORKS HERE AS A TEMPLATE

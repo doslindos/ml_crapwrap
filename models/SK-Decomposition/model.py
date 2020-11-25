@@ -1,6 +1,7 @@
 from . import configurations
 
-from .. import handle_init, save_configuration, save_sk_model, load_configuration, load_sk_model, test_functions, skdecomposition, Path, nparray, npprod
+from .. import handle_init, save_configuration, save_sk_model, load_configuration, load_sk_model, Path, nparray, npprod
+from sklearn import decomposition
 
 class Model:
 
@@ -8,7 +9,7 @@ class Model:
         handle_init(self, conf_name, configurations)
         self.set_conf()
         if not hasattr(self, 'model'):
-            self.model = getattr(skdecomposition, self.function)(**self.params)
+            self.model = getattr(decomposition, self.function)(**self.params)
 
     def set_conf(self):
         self.params = {}
