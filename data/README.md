@@ -5,12 +5,12 @@ The Dataset object calls handlers to actually perform the fetching of the data.
 <br />Description of what a handler should have and do is defined in Data Handlers part.
 
 ### Inputs
-The dataset object takes a name of the dataset as input.<br />It uses this name to call out the handler functions, so there should be a handler (defined in Data Handlers) created with this name.
+The dataset object takes a name of the handler to be used, a name for/of the dataset and source(can be None) as input.<br />It uses the handler name to create the DataHandler and to use it, so there should be a handler (defined in Data Handlers) created with this name.
 
 ### fetch_raw_data function
 This function fetches the original data without preprocessing.
 <br />Inputs for this function are sample size to be fetched and it returns a tensorflow dataset object.
-### fetch_preprocessed_data
+### fetch_preprocessed_data function
 This function fetches the data and feeds it to the DataPreprocessor
 <br />Inputs for this function is sample size to be fetched and it returns a tensorflow dataset object.
 
