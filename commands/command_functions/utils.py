@@ -1,7 +1,8 @@
 from tests.model_tests import test_functions
 from plotting import plot_functions
 from data import data_info
-from . import config, run_function, select_weights, read_prediction_file, ModelHandler, load_data
+from . import config, run_function, select_weights, read_prediction_file, ModelHandler, load_data, open_dirGUI
+from pathlib import Path
 
 def GPU_config():
     # For Tensorflow GPU this prevents weird errors in initializing tensorflow
@@ -40,10 +41,26 @@ def setup_results(parsed, make_results=True):
         if not results:
             results = None
     else:
-        print("Creating predictions file...")
+        if selected_model is not None:
+            print("Creating predictions file...")
         
+            if parsed.dh is None:
+                # Select the data
+                path = open_dirGUI(Path("data", "handlers"))
+                handler = path.parent.parent
+                ds = path.name
+                source = None
+            else:
+                # Use dataset which is given
+                handler = parsed.dh
+                ds = parsed.ds
+                source = None
+        else:
+            print("You did not select a model...")
+            exit()
+
         # Load data
-        dataset = load_data(parsed.d)
+        dataset = load_data(ds, source, handler)
 
         train, validation, test = dataset.fetch_preprocessed_data(parsed.sub_sample)
         

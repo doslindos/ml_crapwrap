@@ -43,7 +43,7 @@ __pycache__/
 credentials.py
 
 #created datasets and creation files
-data/handlers/**/dataset/
+data/handlers/**/datasets/
 *.sql
 *.txt
 !requirements.txt

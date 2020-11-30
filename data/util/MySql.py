@@ -1,10 +1,4 @@
-import importlib
-if importlib.find_loader('credentials'):
-    from credentials import MySQL_connector_params
-    creds_found = True
-else:
-    creds_found = False
-
+from importlib.util import find_spec
 from GUI.GUI_functions import Mysql_data_selector, define_relation
 import mysql.connector
 
@@ -13,7 +7,8 @@ class MySQL_Connector:
 
     def __init__(self):
         # Initializes the connector
-        if creds_found:
+        if find_spec('credentials'):
+            from credentials import MySQL_connector_params
             self.db = mysql.connector.connect(**MySQL_connector_params)
         else:
             print("Define Mysql credentials... Check guide MySQL credentials!")

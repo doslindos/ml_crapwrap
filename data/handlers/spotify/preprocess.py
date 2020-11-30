@@ -8,6 +8,7 @@ class DataPreprocessor:
 
     def check_unique(self, features):
         uniques, indexes, counts = npunique(features, return_index=True, return_counts=True, axis=0)
+        # NOTE try out filter function
         duplicate_indexes = [i for i, dupli in enumerate(features) if i not in indexes]
         print(len(duplicate_indexes))
         print(uniques.shape, indexes)
@@ -64,6 +65,7 @@ class DataPreprocessor:
         
         features, duplicate_indexes, selected_indexes = self.check_unique(features)
         labels = popularities
+        # NOTE try out filter
         labels = [l for i, l in enumerate(labels) if i in selected_indexes]
         
         duplicate_instances = []

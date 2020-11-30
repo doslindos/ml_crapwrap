@@ -5,10 +5,15 @@ from utils.functions import run_function
 from utils.modules import fetch_model, if_callable_class_function
 from tensorflow import config
 from pathlib import Path
+from GUI.GUI_utils import open_dirGUI
 
-def load_data(name):
+def load_data(ds_name, source_file, handler):
+    # If handler is not given use dataset name
+    if handler is None:
+        handler = ds_name
+
     # Initialize Dataset
-    dataset = DatasetHandler(name)
+    dataset = DatasetHandler(handler, ds_name, source_file)
     # Load the data
     dataset.load()
     return dataset

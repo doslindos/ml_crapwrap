@@ -14,7 +14,9 @@ class CreateArgs:
             parser_args = {'description':'Create a dataset'}
             add_args = [
                 {'name':['command'], 'type':str, 'help':'Main command'},
-                {'name':['-d'], 'type':str, 'required':True, 'help':'Path to the script in data_script folder, to the excel file in data_file folder or name of the dataset (tensroflow-dataset "tfds_fetch")'},
+                {'name':['-dh'], 'type':str, 'required':True, 'help':'Name of the dataset handler, if dataset name (-ds) is not given, this -dh is used in its place'},
+                {'name':['-s'], 'type':str, 'default':None, 'help':'Name of the source file. Uses the default value in handler if None is given'},
+                {'name':['-ds'], 'type':str, 'default':None, 'help':'Name for the dataset'},
                 ]
             # Parse arguments
             parsed_args = create_args(parser_args, add_args)
@@ -34,10 +36,12 @@ class CreateArgs:
             parser_args = {'description':'Train a model'}
             add_args = [
                 {'name':['command'], 'type':str, 'help':'Main command'},
-                {'name':['-d'], 'type':str, 'required':True, 'help':'Name for the dataset'},
-                {'name':['-pf'], 'type':str, 'default':None, 'help':'Name for the preprocessing function'},
+                {'name':['-dh'], 'type':str, 'required':True, 'help':'Name of the dataset handler'},
+                {'name':['-s'], 'type':str, 'default':None, 'help':'Name of the source file'},
+                
+                {'name':['-ds'], 'type':str, 'default':None, 'help':'Name for the dataset'},
+                
                 {'name':['-m'], 'type':str, 'default':"NeuralNetworks", 'help':'Model name'},
-                {'name':['-c'], 'type':str, 'default':None, 'help':'Configurations name'},
                 {'name':['--batch_size'], 'type':int, 'default':None, 'help':'Batch size, (do not change for sklearn functions)'},
                 {'name':['--epochs'], 'type':int, 'default':None, 'help':'Number of times the whole dataset is trained to the model (do not define for sklearn functions)'},
                 {'name':['--learning_rate'], 'type':float, 'default':None, 'help':'Learning rate (do not change for sklearn functions)'},

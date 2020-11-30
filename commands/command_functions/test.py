@@ -11,11 +11,6 @@ def test_model(parsed):
     if make_results and not results:
         exit()
     
-    if parsed.pf is None:
-        pf = parsed.d
-    else:
-        pf = parsed.pf
-    
     if isinstance(model, Path):
         print(model)
         exit()

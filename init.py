@@ -16,7 +16,7 @@ if __name__ == '__main__':
             with path_to_handler.joinpath("fetch.py").open("w") as f:
                 f.write("\n\nclass DataFetcher:\n\n\tdef __init__(self, ds_name):\n\t\tself.dataset_name = ds_name\n\n\tdef load_data(self):\n\t\t# Put data loading functions here\n\t\tpass\n\tdef get_data(self):\n\t\t# Put data fetching functions here\n\t\tpass")
             
-            with path_to_handler.joinpath("process.py").open("w") as f:
+            with path_to_handler.joinpath("preprocess.py").open("w") as f:
                 f.write("from .. import tfdata\n\nclass DataPreprocessor:\n\n\tdef preprocess(self):\n\t\t# Put data preprocessing functions here\n\t\t# Function should return train, validation and test split of data in a Tensorflow Dataset form\n\t\treturn (train, validate, test)")
         
             print("Data handler "+name+" created in ", path_to_handler.parent)

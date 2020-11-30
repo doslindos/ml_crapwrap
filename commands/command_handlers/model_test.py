@@ -9,7 +9,7 @@ class ModelTestArgs:
         parser_args = {'description':'Show data information'}
         add_args = [
             {'name':['command'], 'type':str, 'help':'Main command'},
-            {'name':['-d'], 'type':str, 'required':True, 'help':'Name of the dataset'},
+            {'name':['-dh'], 'type':str, 'required':True, 'help':'Name of the dataset'},
             {'name':['-info'], 'type':str, 'required':True, 'help':'Name of the information function'},
             {'name':['-l'], 'type':str, 'required':True, 'help':'Name of the data key'},
             {'name':['--merge_key'], 'type':str, 'default':None, 'help':'Name of the merge key'},
@@ -26,9 +26,10 @@ class ModelTestArgs:
         parser_args = {'description':'Test a model'}
         add_args = [
             {'name':['command'], 'type':str, 'help':'Main command'},
-            {'name':['-d'], 'type':str, 'required':True, 'help':'Dataset name'},
-            {'name':['-m'], 'type':str, 'default':"NeuralNetworks", 'help':'Model name'},
             {'name':['-test'], 'type':str, 'required':True, 'help':'Test type'},
+            {'name':['-dh'], 'type':str, 'default':None, 'help':'Name of the dataset'},
+            {'name':['-ds'], 'type':str, 'default':None, 'help':'Name of the dataset'},
+            {'name':['-m'], 'type':str, 'default':"NeuralNetworks", 'help':'Model name'},
             {'name':['-t'], 'type':int, 'default':None, 'help':'Test set size'},
             {'name':['--dataset_type'], 'type':str, 'default':'test', 'help':'Dataset type to be used'},
             {'name':['--sub_sample'], 'type':int, 'default':None, 'help':'Use a subsample of the dataset'}

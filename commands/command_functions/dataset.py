@@ -1,12 +1,12 @@
 from . import run_function, load_data
 
 def create_dataset(parsed):
-    load_data(parsed.d)
+    load_data(parsed.ds, parsed.s, parsed.dh)
 
 def dataset_information(parsed):
     # Untested
     
-    dataset = load_data(parsed.d)
+    dataset = load_data(parsed.ds, parsed.s, parsed.dh)
     data = dataset.fetch_raw_data(parsed.sub_sample)
 
  #   if parsed.merge_key is not None:

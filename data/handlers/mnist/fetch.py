@@ -2,13 +2,24 @@ from .. import Path, load_with_tfds_load
 
 class DataFetcher:
     
-    def __init__(self, ds_name):
+    def __init__(self, h_name, ds_name, split=['train[:85%]', 'train[85%:]', 'test']):
+        self.handler_name = h_name
         self.ds_name = ds_name
-        self.save_path = Path("data", "handlers", ds_name, "dataset")
+        print(h_name, ds_name, split)
+        self.save_path = Path("data", "handlers", h_name, "datasets", ds_name)
+        self.split = split
 
-    def load_data(self):
+    def load_data(self, split):
         # Fetch data from online with tfds_load function
-        self.dataset = load_with_tfds_load(self.ds_name, self.save_path, split=['train[:85%]', 'train[85%:]', 'test'], as_supervised=True)
+        if split is None:
+            split = self.split
+
+        self.dataset = load_with_tfds_load(
+                self.handler_name, 
+                self.save_path, 
+                split=split, 
+                as_supervised=True
+                )
 
     def get_data(self, sample=None):
         if sample is None:

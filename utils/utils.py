@@ -5,9 +5,12 @@ from numpy import expand_dims as expdims
 
 #TODO write comments
 
-def list_files_in_folder(folder_path, suffix='*.py'):
+def list_files_in_folder(folder_path, suffix='*.py', full=False):
     files = Path(folder_path).rglob(suffix)
-    return [f.name.split('.')[0] for f in files]
+    if full:
+        return [f.name for f in files]
+    else:
+        return [f.name.split('.')[0] for f in files]
 
 def list_subfolder_in_folder(folder_path):
     content = folder_path.glob('*/')

@@ -1,5 +1,5 @@
 from .. import nparray, npfloat32, npappend, npsave, jsondump, exit, Path
-import importlib
+from importlib.util import find_spec
 from spotipy import Spotify
 from spotipy.oauth2 import SpotifyClientCredentials
 from collections import Counter
@@ -8,7 +8,7 @@ class SpotifyAPI:
     # Handles spotify api features
 
     def __init__(self):
-        if importlib.find_loader('credentials'):
+        if find_spec('credentials'):
             from credentials import Spotify_API_credentials
 
             # Initializes spotipy api object
@@ -124,19 +124,29 @@ class SpotifyAPI:
                 print("You must either give a filename or put it in the path")
                 exit()
             else:
+                # Create grandparent folder if not exists
+                grandparent_folder = save_path.parent.parent
+                if not grandparent_folder.exists():
+                    grandparent_folder.mkdir()
+                
+                # Create parent folder
                 parent_folder = save_path.parent
                 if not save_path.exists():
                     if not parent_folder.exists():
                         parent_folder.mkdir()
                         print("Directory ",parent_folder.name," created in ",parent_folder.parent,"...")
+                
+                # If parent folder is found = dataset is created so ask user if it will be overwritten
                 else:
                     print("Directory exists!")
                     overwrite = input("Do you want to overwrite existing features?(y/n)")
                     if overerite != 'y':
                         exit()
-                
+        
+        # Fetch track features
         dataset = self.fetch_track_features(track_id_list)
- 
+        
+        # Save features dataset to a json file
         with save_path.open('w', encoding='utf8') as jf:
             jsondump(dataset, jf, ensure_ascii=False)
 

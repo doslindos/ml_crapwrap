@@ -1,5 +1,5 @@
 from sys import argv, exit
-from commands.command_handlers.test import ModelTestArgs
+from commands.command_handlers.model_test import ModelTestArgs
 from utils.modules import get_callable_class_functions
 
 if __name__ == '__main__':

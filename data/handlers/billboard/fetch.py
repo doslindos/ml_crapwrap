@@ -2,13 +2,23 @@ from .. import spotify_api_fetch, jsonload, Path, tfdata, split_dataset, rndsamp
 from collections import Counter
 class DataFetcher:
     
-    def __init__(self, ds_name):
+    def __init__(self, h_name, ds_name, source="billboard.json"):
+        self.handler_name = h_name
         self.dataset_name = ds_name
-        self.save_path = Path("data", "handlers", "billboard", "dataset", "billboard_dataset.json")
+        # Path to the sql file for mysql fetch
+        self.resource_path = Path("data", "handlers", "billboard", "resources")
+        self.resource_path = self.resource_path.joinpath(source)
+        
+        # Dataset saving path
+        self.save_path = Path("data", "handlers", "billboard", "datasets", ds_name)
 
-    def load_data(self):
+        save_name = ds_name+"_dataset.json"
+
+        self.save_path = self.save_path.joinpath(save_name)
+
+    def load_data(self, sample=None):
         if not self.save_path.exists():
-            json_data = jsonload(Path("data", "handlers", "billboard", "resources", "billboard.json").open('r', encoding='utf-8'))
+            json_data = jsonload(self.resource_path.open('r', encoding='utf-8'))
             
             # Create a data dict with key = track id and value = labels
             data = {}
@@ -35,6 +45,14 @@ class DataFetcher:
                     else:
                         for label in labels:
                             data[track_id].append(label)
+            
+            # Take a random sample of the full dataset
+            if sample is not None:
+                new_data = {}
+                for key, value in rndsample(data.items(), sample):
+                    new_data[key] = value
+                data = new_data
+
 
             spotify_api_fetch(data, self.save_path)
         
