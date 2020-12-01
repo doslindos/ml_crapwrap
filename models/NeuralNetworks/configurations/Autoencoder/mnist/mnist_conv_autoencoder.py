@@ -3,8 +3,8 @@
 conf = {
     
     'train_params':{
-        'batch_size':100, 
-        'epochs':5, 
+        'batch_size':1000, 
+        'epochs':1, 
         'learning_rate':0.001, 
         'loss_function':'mean_squared_error',
         'optimization_function':'autoencoder'
@@ -17,15 +17,15 @@ conf = {
         'layers':{
             
             'Convo':{
-                'kernel_sizes':[[3, 3], [5, 5]],
-                'filters':[1, 32, 64],
-                'strides':[[1, 1], [2, 2]],
-                'poolings':[None, None],
-                'paddings':['SAME', 'SAME'],
-                'batch_norms':[False, False],
+                'kernel_sizes':[[3, 3]],
+                'filters':[1, 32],
+                'strides':[[1, 1]],
+                'poolings':[None],
+                'paddings':['SAME'],
+                'batch_norms':[False],
                 'use_bias':True,
-                'activations':['leaky_relu', 'leaky_relu'],
-                'dropouts':[None, None]
+                'activations':['leaky_relu'],
+                'dropouts':[None]
                 },
     
             'Dense': {
@@ -49,15 +49,15 @@ conf = {
                 },
             
             'Convo':{
-                'kernel_sizes':[[5, 5], [3, 3]],
-                'filters':[64, 32, 1],
-                'strides':[[2, 2], [1, 1]],
-                'poolings':[None, None ],
-                'paddings':['SAME', 'SAME'],
-                'batch_norms':[False, False],
+                'kernel_sizes':[[3, 3]],
+                'filters':[32, 1],
+                'strides':[[1, 1]],
+                'poolings':[None ],
+                'paddings':['SAME'],
+                'batch_norms':[False],
                 'use_bias':True,
-                'activations':['leaky_relu', 'leaky_relu'],
-                'dropouts':[None, None],
+                'activations':['leaky_relu'],
+                'dropouts':[None],
                 'transpose':'encoder_Convo_0',
                 },
             },

@@ -3,7 +3,7 @@
 conf = {
     'train_params':{
         'batch_size':100, 
-        'epochs':10, 
+        'epochs':3, 
         'learning_rate':0.001, 
         'loss_function':'cross_entropy',
         'optimization_function':'classifier'
@@ -13,9 +13,9 @@ conf = {
     'output_shape':[7],
     'layers':{
         'Dense': {
-            'weights':[10, 7],
+            'weights':[50, 7],
             'use_bias':True,
-            'activations':['relu', None],
+            'activations':['relu', 'softmax'],
             'dropouts':[None, None]
         },
     },

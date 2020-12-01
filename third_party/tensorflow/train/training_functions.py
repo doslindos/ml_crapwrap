@@ -77,12 +77,17 @@ def tf_training_loop(
     else:
         output_shape = None
 
+    # Set onehot encoding to False if autoencoder
+    if autoencoder:
+        onehot = False
+
     for epoch in range(epochs):
         print(train.cardinality())
         for step, batch_x in enumerate(train):
             x, y = parse_sample(batch_x, output_shape, onehot)
             if autoencoder:
                 y = x
+        
             loss = optimization_function(
                     model, 
                     x, 
@@ -98,9 +103,11 @@ def tf_training_loop(
                     x, y = parse_sample(batch, output_shape, onehot)
                     if autoencoder:
                         y = x
-
-                    validation_loss = loss_function(model.run(x, training=False), y)
+                    val_out = model.run(x, training=False)
+                    validation_loss = loss_function(val_out, y)
                     total_val_loss =+ validation_loss.numpy()
 
-            print("Batch ",step," loss: ", total_val_loss)
+                print("Batch ",step," loss: ", total_val_loss)
+                if not autoencoder:
+                    print("Accuracy: ", )
     print("Training finished...")

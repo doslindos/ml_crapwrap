@@ -66,7 +66,7 @@ class ModelTester:
         dataset_path = Path(open_dirGUI(Path("data", "handlers")))
 
         # Load the dataset
-        dataset = DatasetHandler(dataset_path.name)
+        dataset = DatasetHandler(dataset_path.parent.parent.name, dataset_path.name, None)
         dataset.load()
         self.train, self.validate, self.test = dataset.fetch_preprocessed_data()
     

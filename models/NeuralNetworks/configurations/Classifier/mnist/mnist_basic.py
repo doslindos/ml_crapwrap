@@ -3,8 +3,8 @@ conf = {
     # Dense classifier
     'train_params':{
         'batch_size':1000, 
-        'epochs':1, 
-        'learning_rate':0.0001, 
+        'epochs':3, 
+        'learning_rate':0.001, 
         'loss_function':'cross_entropy',
         'optimization_function':'classifier'
         },

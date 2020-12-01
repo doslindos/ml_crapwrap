@@ -1,8 +1,8 @@
 # Dense autoencoder
 conf = {
     'train_params':{
-        'batch_size':100, 
-        'epochs':3, 
+        'batch_size':1000, 
+        'epochs':1, 
         'learning_rate':0.001, 
         'loss_function':'mean_squared_error',
         'optimization_function':'autoencoder'
