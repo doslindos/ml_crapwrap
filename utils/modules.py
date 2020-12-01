@@ -2,6 +2,7 @@ from importlib import import_module
 from importlib.util import find_spec
 from . import Path
 from GUI import open_fileGUI
+from utils.utils import recursive_file_search
 
 def get_module(path_to_module):
     # Takes the path to the module wanted to fetch and returns the module
@@ -50,6 +51,40 @@ def if_callable_class_function(class_obj, function):
     else:
         return False
 
+def search_conf(model, conf):
+    # Makes a recursive search for a configurations file from configurations files of a given model
+    # Opens a GUI if a file is not found with given name or there are several
+    # In:
+    #   model:                      str, name of the model
+    #   conf:                       str, name of the configurations file
+    # Out:
+    #   Path object:                path to the configuration file
+    
+    # Path from which to search configurations
+    model_confs_path = Path('models', model, 'configurations')
+
+    # If None is given as conf open the GUI
+    if conf is None:
+        # Open a gui to choose conf file
+        return open_fileGUI(model_confs_path)
+    else:
+        # Search the conf file
+        # If searched file is given with suffix
+        if '.' in conf:
+            full = True
+        else:
+            full = False
+        
+        # Make the recursive search
+        files = recursive_file_search(model_confs_path, '*.*', full)
+        # If only one file matches the name given
+        files_with_given_name = list(files.keys()).count(conf)
+        if files_with_given_name == 1:
+            return files[conf]
+        else:
+            print("More or less than one file called ", conf ," found...")
+            return open_fileGUI(model_confs_path)
+
 def fetch_model(model_name, conf_name):
     # Fetch the model
     # In:
@@ -57,9 +92,7 @@ def fetch_model(model_name, conf_name):
     #   conf_name:                      str, name of the model configration file
     
     model_module = get_module("models."+model_name+".model")
-    if isinstance(conf_name, str):
-        conf_name = open_fileGUI(
-                Path("models", model_name,"configurations"), 
-                (('python files', '*.py'), )
-                )
+    if isinstance(conf_name, str) or conf_name is None:
+        conf_name = search_conf(model_name, conf_name)
+
     return model_module.Model(conf_name)

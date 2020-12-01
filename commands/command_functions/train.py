@@ -7,8 +7,8 @@ def train_model(parsed):
 
     train, validation, test = dataset.fetch_preprocessed_data(parsed.sub_sample)
     
-    #Initialize Trainer
-    model_handler = ModelHandler((train, validation, test), parsed.m, conf)
-    #Run training
+    # Initialize model handler
+    model_handler = ModelHandler((train, validation, test), parsed.m, parsed.c)
+    # Run training
     model_handler.train(parsed)
 

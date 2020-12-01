@@ -48,31 +48,8 @@ In commandline:
 This guide is for quickly trying out some models!
 ## MNIST
 First go to the project directory in commandline (directory where you downloaded the project in the setup (name is ml_framework))<br />`cd <project directory>`
-<br />Next download the MNIST dataset:<br />`python main.py dataset -d mnist -ff tfds_fetch`
-<br />After it is done, you can train your first MNIST model:<br />`python main.py train -d mnist -c mnist_dense`
-<br />This command will train a dense classifier neural network with default settings (can be found and modified NeuralNetworks/configurations.py).
-<br />The training will take a while, but after it is done and if everything did go well, in the commandline should be text "Training finished..."<br />
-Now you can try out your model! <br />Type:<br />`python main.py test -d mnist -test classification_test`<br />
-A folder selection window should pop up. (Mac example of the file selection)
-![alt text](https://github.com/doslindos/ml_framework/blob/master/sources/example_images/mac_select_model.png?raw=true) Choose the model you trained by double clicking the first folder on the popup window and select the model **folder** **(Trained models folders are named with time stamp from the time the training occured)**. Click on the model you want to use and select Choose.
-<br />Condusion Matrix should be displayed on the screen.
-![alt text](https://github.com/doslindos/ml_framework/blob/master/sources/example_images/confusion_m_example.png?raw=true)
-<br />Confusion Matrix displays the predictions of a classification model. At the top are the models predictions and on the left the real labels of the inputs.<br />
-Prediction is right when the top and the right numbers match. So for example the most upper left corner signifies predicted 0 images which actually are a 0 image.
 
-<br />Some working default training commands:
-<br />MNIST:
-<br />Train a dense mnist image classifier:
-<br />`python create.py train -d mnist -c mnist_dense`
-<br />Train a convolutional-dense mnist image classifier:
-<br />`python create.py train -d mnist -c mnist_conv`
-<br />Train a dense mnist image autoencoder:
-<br />`python create.py train -d mnist -c mnist_basic_autoencoder`
-<br />Train a convolutional-dense mnist image autoencoder:
-<br />`python create.py train -d mnist -c mnist_conv_autoencoder`
-
-#TODO
-More visual demonstrations...
+# REDO to work with changes
 
 # Mysql and Spotify API setup
 
@@ -105,9 +82,6 @@ where <src.sql> is the sql file, for example: example.sql<br /><create function 
 TODO
 
 # Commands
-
-All commands are called from active virtualenv with `python main.py <command>`<br />
-All command attributes can be displayed with -h flag for example: `python main.py <command> -h`
 
 # Command Info
 ## Fetch a dataset

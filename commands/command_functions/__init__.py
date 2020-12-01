@@ -5,7 +5,7 @@ from utils.functions import run_function
 from utils.modules import fetch_model, if_callable_class_function
 from tensorflow import config
 from pathlib import Path
-from GUI.GUI_utils import open_dirGUI
+from GUI.GUI_utils import open_dirGUI, open_fileGUI
 
 def load_data(ds_name, source_file, handler):
     # If handler is not given use dataset name

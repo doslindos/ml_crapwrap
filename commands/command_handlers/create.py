@@ -42,6 +42,7 @@ class CreateArgs:
                 {'name':['-ds'], 'type':str, 'default':None, 'help':'Name for the dataset'},
                 
                 {'name':['-m'], 'type':str, 'default':"NeuralNetworks", 'help':'Model name'},
+                {'name':['-c'], 'type':str, 'default':None, 'help':'Name of the configuration file'},
                 {'name':['--batch_size'], 'type':int, 'default':None, 'help':'Batch size, (do not change for sklearn functions)'},
                 {'name':['--epochs'], 'type':int, 'default':None, 'help':'Number of times the whole dataset is trained to the model (do not define for sklearn functions)'},
                 {'name':['--learning_rate'], 'type':float, 'default':None, 'help':'Learning rate (do not change for sklearn functions)'},
@@ -58,7 +59,7 @@ class CreateArgs:
         # Validate input arguments
         validate_args(vars(parsed_args))
         # Set up gpu if you use gpu version of the tensorflow
-        #GPU_config()
+        GPU_config()
         # Run function
         train_model(parsed_args)
         

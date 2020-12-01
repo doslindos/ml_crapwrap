@@ -6,7 +6,7 @@ from numpy import expand_dims as expdims
 #TODO write comments
 
 def list_files_in_folder(folder_path, suffix='*.py', full=False):
-    files = Path(folder_path).rglob(suffix)
+    files = Path(folder_path).glob(suffix)
     if full:
         return [f.name for f in files]
     else:
@@ -15,6 +15,13 @@ def list_files_in_folder(folder_path, suffix='*.py', full=False):
 def list_subfolder_in_folder(folder_path):
     content = folder_path.glob('*/')
     return [c for c in content if c.is_dir()]
+
+def recursive_file_search(root_folder, suffix='*.py', full=False):
+    files = [p for p in Path(root_folder).rglob(suffix) if '.pyc' not in p.suffix]
+    return dict(zip(
+            [f.name if full else f.name.split('.')[0] for f in files], 
+            [f for f in files]
+            ))
 
 def results_to_nplist(results):
     if isinstance(results, dict):

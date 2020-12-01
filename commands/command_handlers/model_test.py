@@ -9,7 +9,8 @@ class ModelTestArgs:
         parser_args = {'description':'Show data information'}
         add_args = [
             {'name':['command'], 'type':str, 'help':'Main command'},
-            {'name':['-dh'], 'type':str, 'required':True, 'help':'Name of the dataset'},
+            {'name':['-dh'], 'type':str, 'required':True, 'help':'Name of the dataset handler'},
+            {'name':['-ds'], 'type':str, 'required':True, 'help':'Name of the dataset'},
             {'name':['-info'], 'type':str, 'required':True, 'help':'Name of the information function'},
             {'name':['-l'], 'type':str, 'required':True, 'help':'Name of the data key'},
             {'name':['--merge_key'], 'type':str, 'default':None, 'help':'Name of the merge key'},
@@ -27,9 +28,10 @@ class ModelTestArgs:
         add_args = [
             {'name':['command'], 'type':str, 'help':'Main command'},
             {'name':['-test'], 'type':str, 'required':True, 'help':'Test type'},
-            {'name':['-dh'], 'type':str, 'default':None, 'help':'Name of the dataset'},
+            {'name':['-dh'], 'type':str, 'default':None, 'help':'Name of the dataset handler'},
             {'name':['-ds'], 'type':str, 'default':None, 'help':'Name of the dataset'},
             {'name':['-m'], 'type':str, 'default':"NeuralNetworks", 'help':'Model name'},
+            {'name':['-c'], 'type':str, 'default':None, 'help':'Name of the configuration file'},
             {'name':['-t'], 'type':int, 'default':None, 'help':'Test set size'},
             {'name':['--dataset_type'], 'type':str, 'default':'test', 'help':'Dataset type to be used'},
             {'name':['--sub_sample'], 'type':int, 'default':None, 'help':'Use a subsample of the dataset'}
@@ -49,12 +51,12 @@ class ModelTestArgs:
         parser_args = {'description':'Plot models outputs'}
         add_args = [
             {'name':['command'], 'type':str, 'help':'Main command'},
-            {'name':['-d'], 'type':str, 'required':True, 'help':'Dataset name'},
-            {'name':['-m'], 'type':str, 'default':"NN", 'help':'Model name'},
             {'name':['-plot'], 'type':str, 'required':True, 'help':'Plot type'},
+            {'name':['-dh'], 'type':str, 'default':None, 'help':'Name of the dataset handler'},
+            {'name':['-ds'], 'type':str, 'default':None, 'help':'Name of the dataset'},
+            {'name':['-m'], 'type':str, 'default':"NeuralNetwork", 'help':'Model name'},
+            {'name':['-c'], 'type':str, 'default':None, 'help':'Name of the configuration file'},
             {'name':['--dataset_type'], 'type':str, 'default':'test', 'help':'Dataset type to be used'},
-            {'name':['--plot_dims'], 'type':int, 'default':2, 'help':'Plot dimensions'},
-            {'name':['--function'], 'type':str, 'default':'PCA', 'help':'Dimensionality reduction function. From sklearn.decomposition'},
             ]
         
         # Parse arguments
@@ -62,6 +64,6 @@ class ModelTestArgs:
         # Validate input arguments
         validate_args(vars(parsed_args))
         # Run function
-        plot_model(parsed_args)
+        plot_model(vars(parsed_args))
 
 
