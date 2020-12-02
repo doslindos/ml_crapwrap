@@ -21,6 +21,8 @@ class Model:
     
     def save(self, best_estimator):
         path = Path('models/SK-EnsembleGridSearch/saved_models/')
+        if not path.exists():
+            path.mkdir()
         path = save_sk_model(best_estimator, path.joinpath(self.conf_name))
         save_configuration(self.c, self.conf_name, path)
     

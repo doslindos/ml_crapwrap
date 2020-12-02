@@ -24,6 +24,9 @@ class Model:
     
     def save(self):
         path = Path('models/SK-Cluster/saved_models/')
+ 
+        if not path.exists():
+            path.mkdir()
         path = save_sk_model(self.model, path.joinpath(self.conf_name))
         save_configuration(self.c, self.conf_name, path)
     

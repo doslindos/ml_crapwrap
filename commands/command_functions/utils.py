@@ -1,7 +1,7 @@
 from tests.model_tests import test_functions
 from plotting import plot_functions
 from data import data_info
-from . import config, run_function, select_weights, read_prediction_file, ModelHandler, load_data, open_dirGUI
+from . import Path, config, run_function, select_weights, read_prediction_file, ModelHandler, load_data, open_dirGUI
 
 def GPU_config():
     # For Tensorflow GPU this prevents weird errors in initializing tensorflow

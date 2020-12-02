@@ -57,7 +57,7 @@ First go to the project directory in commandline (directory where you downloaded
 <br />`python create.py train -dh mnist -c mnist_basic`
 <br /><br />After the training is done you can test how the model performs on a test dataset (data which the model has not seen before).
 <br />The testing command:
-<br />`python model_tests.py test_model -test classification_test`
+<br />`python model_tests.py test_model -dh mnist -test classification_test`
 <br /><br />First this command will open up a window to select the model to be used.
 <br />It will look like this:
 <br />![alt text](https://github.com/doslindos/ml_stuff/blob/master/sources/example_images/model_selection.png?raw=true)

@@ -26,6 +26,9 @@ class Model:
         b = self.bias
 
         path = Path('models/NeuralNetworks/saved_models/')
+        if not path.exists():
+            path.mkdir()
+
         path = save_weights(w, b, path.joinpath(
                                         self.conf_class_name[0], 
                                         self.conf_class_name[1], 
