@@ -34,7 +34,7 @@ In commandline:
 1. Open commanline.<br />If you are using Mac or Linux it is the application called Terminal. If Windows Command Prompt or PowerShell.
 2. Move to your working directory. This is the directory where this project is stored.<br />`cd <working directory>`
 3. Clone this project in to it. <br />`git clone git@github.com:doslindos/ml_stuff.git`
-4. Move to the created project<br />`cd ml_framework`
+4. Move to the created project<br />`cd ml_stuff`
 5. Create virtualenvironment<br />`virtualenv env` <br />
 6. Activate the created virtualenv<br />in **Mac and Linux**<br />`source env/bin/activate`<br />in **Windows**<br />`env\Scripts\activate`
 <br />If (env) appeared in the most left corner of the commandline it means that the virtualenv is activated.
