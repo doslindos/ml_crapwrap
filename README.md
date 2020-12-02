@@ -4,9 +4,9 @@
 The purpose of this project has been for me to practice Python and Machine Learning
 <br />It is a wrapper for trying out Machine Learning functions. 
 The project came to be as I tried to learn how to use several Machine Learning models and was tired to write a new script for every single one of them.<br />
-After several scripts lying all ower my computer I decided to create a single repo for them<br />
+Scripts lying allover my computer I decided to create a single repo for them<br />
 If you want to test out the project it will require from you some basic knowledge of using the commandline but the instructions are hopefully clear enough for a quick try.<br />
-<br />This is mainly just a place for me to store my code and the instructions for me not to forget how this works, so it is not stable, everything that is in the guide is tested on Windows and Mac (not the latest cahnges).
+<br />This is mainly just a place for me to store my code, so it is not stable, but everything that is in the guide is tested on Windows. 
 
 ## Dependencies
 Project has been tested with these dependency versions
@@ -47,9 +47,37 @@ In commandline:
 
 This guide is for quickly trying out some models!
 ## MNIST
-First go to the project directory in commandline (directory where you downloaded the project in the setup (name is ml_framework))<br />`cd <project directory>`
+First go to the project directory in commandline (directory where you downloaded the project in the setup (name is ml_stuff))<br />`cd <project directory>`
+<br /><br />Next activate the environment (just like in Setup #6)
 
-# REDO to work with changes
+### Classification
+<br /><br />This command is going to download the MNIST dataset in the project folders (stored in data/handlers/mnist/datasets/mnist/), preprocess the images lastly it setups the model and starts to train it.
+<br />When the training starts the progress is printed on the terminal.<br />First is **the batch number** <br />with the mnist_basic configurations 50 batches equals the whole training set <br />**validation loss** validation loss tells you the models performance for a set of data (validation set) which it is not seen before. The loss is basically the difference between true labels and predictions so if it goes down, the models predictions are closer to the true lables.<br />**accuracy** (not implemented yet! for now it is empty)
+<br /><br />The training command:
+<br />`python create.py train -dh mnist -c mnist_basic`
+<br /><br />After the training is done you can test how the model performs on a test dataset (data which the model has not seen before).
+<br />The training command:
+<br />`python model_tests.py test_model -test classification_test`
+<br /><br />This command will open up a window to select the model to be used.
+<br />It will look like this:
+<br />![alt text](https://github.com/doslindos/ml_stuff/blob/master/sources/example_images/model_selection.png?raw=true)
+
+<br /><br />After you choose a model (a folder which does have a date as a name) the test dataset inputs are run through the model and the inputs with the models outputs are stored in a file (inside the model folder).
+<br />This step is done so that you do not have to run the model everytime you run tests on the same dataset.
+<br />After this the confusion matrix is plotted and it looks like this:
+<br />![alt text](https://github.com/doslindos/ml_stuff/blob/master/sources/example_images/confusion_matrix.png?raw=true)
+<br />In the picture x-axis represents prediction and y-axis the actual label of instances.
+<br />For example in the left uppermost corner block are the number of instances the model predicted as zeros which in fact are zeros.
+<br />The second block from it to the right tells you how many instances the model predicted as ones which were actually zeros.
+<br />Red and blue numbers at the right and bottom tells the total number of instances for the current row or column. 
+<br />For example the red number at the end of (right) the first row (980) tells you the total number of actual zeros in the dataset used.
+<br />And the red number at the end of (bottom) the first column (983) tells you the number of times the model predicted the instance to be a zero.
+
+<br />The accuracy and the confusion matrix (if for some reason does not open like above) are printed in the terminal.
+<br />![alt text](https://github.com/doslindos/ml_stuff/blob/master/sources/example_images/confusion_terminal.png?raw=true)
+
+### Autoencoder
+TODO
 
 # Mysql and Spotify API setup
 
