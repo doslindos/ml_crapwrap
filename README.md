@@ -56,9 +56,9 @@ First go to the project directory in commandline (directory where you downloaded
 <br /><br />The training command:
 <br />`python create.py train -dh mnist -c mnist_basic`
 <br /><br />After the training is done you can test how the model performs on a test dataset (data which the model has not seen before).
-<br />The training command:
+<br />The testing command:
 <br />`python model_tests.py test_model -test classification_test`
-<br /><br />This command will open up a window to select the model to be used.
+<br /><br />First this command will open up a window to select the model to be used.
 <br />It will look like this:
 <br />![alt text](https://github.com/doslindos/ml_stuff/blob/master/sources/example_images/model_selection.png?raw=true)
 
@@ -67,8 +67,8 @@ First go to the project directory in commandline (directory where you downloaded
 <br />After this the confusion matrix is plotted and it looks like this:
 <br />![alt text](https://github.com/doslindos/ml_stuff/blob/master/sources/example_images/confusion_matrix.png?raw=true)
 <br />In the picture x-axis represents prediction and y-axis the actual label of instances.
-<br />For example in the left uppermost corner block are the number of instances the model predicted as zeros which in fact are zeros.
-<br />The second block from it to the right tells you how many instances the model predicted as ones which were actually zeros.
+<br />For example in the left uppermost corner block is the number of instances the model predicted as zeros which in fact are zeros.
+<br />The second block from it to the right is the number of instances the model predicted as ones which were actually zeros.
 <br />Red and blue numbers at the right and bottom tells the total number of instances for the current row or column. 
 <br />For example the red number at the end of (right) the first row (980) tells you the total number of actual zeros in the dataset used.
 <br />And the red number at the end of (bottom) the first column (983) tells you the number of times the model predicted the instance to be a zero.
@@ -79,6 +79,8 @@ First go to the project directory in commandline (directory where you downloaded
 ### Autoencoder
 TODO
 
+
+
 # Mysql and Spotify API setup
 
 This guide is for you who want to use MySQL data as a datset or Spotify API<br />
@@ -87,6 +89,7 @@ If you are using mysql functions make sure that your project has a **credentials
 <br />Create it using credentials_example.py as a model.
 <br />1. Move to where you did install the project.<br />`cd <project dir>`
 <br />2. Copy credentials template.<br />`cp credentials_example.py credentials.py`
+
 ## Spotify credentials
 Spotify credentials can be created at https://developer.spotify.com/dashboard/ 
 1. It requires a Spotify account, but if you have one just sign-in.
@@ -100,14 +103,6 @@ Spotify credentials can be created at https://developer.spotify.com/dashboard/
 Fill in the MySQL_connector_params. <br />More information: https://dev.mysql.com/doc/connector-python/en/connector-python-connectargs.html 
 <br />Connector params are given to the connector, therefore if you want to add attributes just add them to params with **key** as attribute name and **value** as input.
 
-
-# Guide example
-The `data/data_scripts/example.sql` file provides an template for a MySQL dataset fetch.
-<br />1. Open command prompt or terminal and navigate to the folder where project was installed:<br />`cd <project directory>`
-<br />2. Activate virtualenvironment:<br />**Mac and Linux**<br />`source env/bin/activate`<br />**Windows**<br />`env\Scripts\activate`
-<br />3. Create the dataset:<br />`python main.py dataset -d <src.sql> -ff msyqldb_fetch -cf <create function name> -name <dataset name>`<br />
-where <src.sql> is the sql file, for example: example.sql<br /><create function name> is the name of create function, for example: spotify<br /><dataset name> is the name for the created dataset.
-TODO
 
 # Commands
 
