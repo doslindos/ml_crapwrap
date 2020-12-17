@@ -54,3 +54,4 @@ class ModelHandler:
         
         if test_name is not None:
             run_function(test_functions, test_name, {'results':results, 'model':self.model})
+        return results

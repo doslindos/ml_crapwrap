@@ -62,6 +62,12 @@ class ModelTestArgs:
             {'name':['-m'], 'type':str, 'default':"NeuralNetwork", 'help':'Model name'},
             {'name':['-c'], 'type':str, 'default':None, 'help':'Name of the configuration file'},
             {'name':['--dataset_type'], 'type':str, 'default':'test', 'help':'Dataset type to be used'},
+            {'name':['--scale'], 'type':lambda x: (str(x).lower() in ['true', '1', 'yes']), 'default':True, 'help':'True = dataset scaling is applied'},
+            {'name':['--balance'], 'type':lambda x: (str(x).lower() in ['true', '1', 'yes']), 'default':True, 'help':'True = dataset balancing is applied'},
+            {'name':['--store_outputs'], 'type':lambda x: (str(x).lower() in ['true', '1', 'yes']), 'default':False, 'help':'True = dataset scaling is applied'},
+            {'name':['--sub_sample'], 'type':int, 'default':None, 'help':'Use a subsample of the dataset'},
+            {'name':['--plot_dims'], 'type':int, 'default':2, 'help':'Dimensions of the plot'},
+            {'name':['--function'], 'type':str, 'default':'PCA', 'help':'Dim reduction function'}
             ]
         
         # Parse arguments
@@ -69,6 +75,6 @@ class ModelTestArgs:
         # Validate input arguments
         validate_args(vars(parsed_args))
         # Run function
-        plot_model(vars(parsed_args))
+        plot_model(parsed_args)
 
 

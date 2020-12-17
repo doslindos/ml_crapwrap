@@ -17,7 +17,7 @@ def format_data_to_plot(results, dims, function='PCA'):
     #   function:                   str, name of the dimension reduction function (sklearn.decomposition)
     # Out:
     #   (labels, data_lists)        tuple, (label array, x, y and possible z array)
-
+    
     #Order results by labels
     results = dict(sorted(results.items(), key=lambda kv: kv[0]))
     

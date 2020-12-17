@@ -32,30 +32,22 @@ class Model:
     def call_model_attributes(self, attribute, inputs):
         return getattr(self.model, attribute)(**inputs)
 
-    def train(self, dataset):
-        
-        if isinstance(dataset, dict):
-            x = dataset['x']
-            y = dataset['y']
-        elif hasattr(dataset, 'as_numpy_iterator'):
-            dataset = list(dataset.as_numpy_iterator())
-            if isinstance(dataset[0], tuple):
-                x, y = zip(*dataset)
+    def train(self, datasets):
+        if isinstance(datasets, tuple):
+            train, validate = datasets
+        else:
+            print("Validation set not given...")
+            exit()
 
-        x = nparray(x)
-        
-        if len(x[0].shape) > 1:
-            x = x.reshape((x.shape[0], npprod(x.shape[1:])))
-        self.model.fit(x)
+        for train_data in train.batch(train.cardinality()):
+            x, y = train_data
+            x = x.numpy()
+            y = y.numpy()
+            print("Fitting...")
+            self.model.fit(x)
 
         self.save()
         print("Training finished...")
 
     def run(self, x, training=False):
-        if hasattr(x, 'numpy'):
-            x = x.numpy()
-
-        if len(x.shape) == 4:
-            x = x.reshape((x.shape[0], npprod(x.shape[1:])))
-        
         return self.model.transform(x)
