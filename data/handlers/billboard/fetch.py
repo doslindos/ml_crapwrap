@@ -48,7 +48,7 @@ class DataFetcher:
                 for key, value in rndsample(data.items(), sample):
                     new_data[key] = value
                 data = new_data
-
+            
             spotify_api_fetch(data, self.save_path, crawl_albums=True)
             
         self.dataset = jsonload(self.save_path.open("r", encoding='utf-8'))

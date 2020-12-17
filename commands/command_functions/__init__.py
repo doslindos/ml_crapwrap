@@ -7,7 +7,7 @@ from tensorflow import config
 from pathlib import Path
 from GUI.GUI_utils import open_dirGUI, open_fileGUI
 
-def load_data(ds_name, source_file, handler, new_split=False):
+def load_data(ds_name, source_file, handler):
     # If handler is not given use dataset name
     if handler is None:
         handler = ds_name
@@ -15,5 +15,5 @@ def load_data(ds_name, source_file, handler, new_split=False):
     # Initialize Dataset
     dataset = DatasetHandler(handler, ds_name, source_file)
     # Load the data
-    dataset.load(new_split)
+    dataset.load()
     return dataset
