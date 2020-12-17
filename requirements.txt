@@ -3,6 +3,7 @@
 #tensorflow
 tensorflow-datasets
 scikit-learn
+imbalanced-learn
 matplotlib
 spotipy
 mysql-connector-python

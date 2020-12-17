@@ -4,20 +4,22 @@ from .Spotify_functions import SpotifyAPI
 from tensorflow_datasets import load as tfds_load
 from csv import reader as csv_reader
 
-def spotify_api_fetch(data, save_path, filename=None):
+def spotify_api_fetch(data, save_path, filename=None, crawl_albums=False):
     # Creates a dataset with track_features
     # In:
     #   data:                   list, track ids
     #   save_path:              Path object, path to save location
     #   filename:               str, name for the save file if None it must be in path
-    
+    #   crawl_albums:           bool, if true every song in the same album as a song in the data will be fetched also
+
     input_check(data, [list, dict], "data in spotify_api_fetch")
     if filename is not None:
         input_check(filename, [str, None], "filename in spotify_api_fetch")
     input_check(save_path, [Path], "save_path in spotify_api_fetch")
-
+    input_check(crawl_albums, [bool], "crawl_albums in spotify_api_fetch")
+    
     api = SpotifyAPI()
-    api.make_feature_dataset(data, save_path, filename)
+    api.make_feature_dataset(data, save_path, filename, crawl_albums)
 
 def load_with_tfds_load(
         dataset_name, 

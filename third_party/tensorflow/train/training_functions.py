@@ -1,4 +1,5 @@
 from .. import tf
+from numpy import set_printoptions
 
 # Training handling function
 
@@ -55,7 +56,7 @@ def tf_training_loop(
         loss_function, 
         optimization_function, 
         optimizer, 
-        epochs=10, 
+        epochs=1, 
         onehot=False,
         autoencoder=False,
         debug=False
@@ -72,6 +73,8 @@ def tf_training_loop(
     #   epoch:                      int, how many times is the model trained with the whole dataset
     print("Training starts...")
     
+    set_printoptions(precision=3)
+    
     if 'output_shape' in model.c.keys():
         output_shape = model.c['output_shape']
     else:
@@ -80,15 +83,22 @@ def tf_training_loop(
     # Set onehot encoding to False if autoencoder
     if autoencoder:
         onehot = False
+    else:
+        # Initialize accuracy metrics
+        train_metric = tf.keras.metrics.Accuracy()
+        validation_metric = tf.keras.metrics.Accuracy()
 
     for epoch in range(epochs):
-        print(train.cardinality())
+        # Reset the metric state
+        train_metric.reset_states()
+
         for step, batch_x in enumerate(train):
+            print("Batch: ", step)
             x, y = parse_sample(batch_x, output_shape, onehot)
             if autoencoder:
                 y = x
         
-            loss = optimization_function(
+            output, loss = optimization_function(
                     model, 
                     x, 
                     y, 
@@ -97,8 +107,13 @@ def tf_training_loop(
                     training=True
                     )
             
+            if not autoencoder:
+                train_metric.update_state(tf.argmax(y, 1), tf.argmax(output, 1))
+                print("Training accuracy: ", train_metric.result().numpy(), " loss: ", loss.numpy())
+
             if validation is not None:
                 total_val_loss = 0
+                validation_metric.reset_states()
                 for batch in validation.batch(validation.cardinality().numpy()):
                     x, y = parse_sample(batch, output_shape, onehot)
                     if autoencoder:
@@ -106,8 +121,7 @@ def tf_training_loop(
                     val_out = model.run(x, training=False)
                     validation_loss = loss_function(val_out, y)
                     total_val_loss =+ validation_loss.numpy()
-
-                print("Batch ",step," loss: ", total_val_loss)
-                if not autoencoder:
-                    print("Accuracy: ", )
+                    validation_metric.update_state(tf.argmax(y, 1), tf.argmax(val_out, 1))
+                
+                print("Validation accuracy", validation_metric.result().numpy(), " loss: ", total_val_loss)
     print("Training finished...")

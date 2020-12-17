@@ -53,7 +53,13 @@ class DatasetHandler:
         # Fetches the unpreprocessed data
         return self.data_fetcher.get_data(sub_sample)
 
-    def fetch_preprocessed_data(self, sub_sample=None):
+    def fetch_preprocessed_data(self, sub_sample=None, scale=True, balance=True, new_split=False):
         dataset = self.fetch_raw_data(sub_sample)
-        return self.data_preprocessor.preprocess(dataset)
+        return self.data_preprocessor.preprocess(
+                                    dataset, 
+                                    self.data_fetcher.save_folder, 
+                                    scale, 
+                                    balance, 
+                                    new_split
+                                    )
 

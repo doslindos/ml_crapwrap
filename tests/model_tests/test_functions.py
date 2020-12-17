@@ -1,4 +1,6 @@
-from . import npargmax, npeye, set_printoptions, nparray, cast, sklearn_functions, exit, display_confusion_matrix, ModelTester
+from . import npeye, set_printoptions, nparray, cast, sklearn_functions, exit, display_confusion_matrix, ModelTester
+from .util import parse_results
+
 
 def classification_test(results, model, from_results=True):
     # Classification test
@@ -7,47 +9,29 @@ def classification_test(results, model, from_results=True):
     #   model:                  model object, model used
     #   from_results:           bool, if true function uses results data else outputs from the model (not ready)
 
-    y = []
-    predictions = []
-    labels = len(results.keys())
-    for key, result in results.items():
-        for logits in result:
-            y.append(key)
-            if logits.shape[-1] > 2:
-                predictions.append(npargmax(logits))
-            else:
-                predictions.append(logits)
-            
-    labels = [i for i in range(labels)]
-    
+    predictions, y, labels = parse_results(results)
     print(nparray(predictions).shape, nparray(y).shape)
-    print("Total accuracy: ", (nparray(predictions) == nparray(y)).mean())
+    accuracy(None, None, pred_y = (predictions, y))
     cm = sklearn_functions.make_confusion_matrix( y, predictions, labels)
     display_confusion_matrix(cm, labels)
     #print("Predictions: ", [npargmax(prediction) for prediction in predictions])
     #print("Labels: ", y.numpy())
 
 
-def accuracy(results, model, from_results=True):
-    # Prints labeling accuracy
+def accuracy(results, model, pred_y=None):
+    # Prints accuracy
     # In:
     #   results:                dict, label - model output pairs
-    #   model:                  model object, model used
-    #   from_results:           bool, if true function uses results data else outputs from the model (not ready)
+    #   pred_y:                 tuple, allready parsed results
     
-    for key, value in results.items():
-        print("\nLabel: ", key)
-        right = 0
-        wrong = 0
-        for v in value:
-            if npargmax(v) == key:
-                right += 1
-            else:
-                wrong += 1
+    if pred_y is None:
+        if results is None:
+            print("No inputs...")
+            exit()
 
-        print("\nCorrect predictions: ", right)
-        print("Wrong predictions: ", wrong)
+        pred_y = parse_results(results)
 
+    print("Total accuracy: ", (nparray(pred_y[0]) == nparray(pred_y[1])).mean())
 
 def testing_gui(model, results=None):
     # Opens testing GUI

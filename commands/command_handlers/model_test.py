@@ -1,5 +1,6 @@
 from . import validate_args, GPU_config, create_args, if_callable_class_function, get_callable_class_functions
 from ..command_functions.plot import plot_model
+from ..command_functions.dataset import dataset_information
 from ..command_functions.test import test_model
 
 class ModelTestArgs:
@@ -9,11 +10,13 @@ class ModelTestArgs:
         parser_args = {'description':'Show data information'}
         add_args = [
             {'name':['command'], 'type':str, 'help':'Main command'},
-            {'name':['-dh'], 'type':str, 'required':True, 'help':'Name of the dataset handler'},
-            {'name':['-ds'], 'type':str, 'required':True, 'help':'Name of the dataset'},
             {'name':['-info'], 'type':str, 'required':True, 'help':'Name of the information function'},
-            {'name':['-l'], 'type':str, 'required':True, 'help':'Name of the data key'},
-            {'name':['--merge_key'], 'type':str, 'default':None, 'help':'Name of the merge key'},
+            {'name':['-dh'], 'type':str, 'required':True, 'help':'Name of the dataset handler'},
+            {'name':['-ds'], 'type':str, 'default':None, 'help':'Name of the dataset'},
+            {'name':['-use'], 'type':str, 'default':'train', 'help':'Dataset part used'},
+            {'name':['--scale'], 'type':lambda x: (str(x).lower() in ['true', '1', 'yes']), 'default':False, 'help':'True = dataset svaling is applied'},
+            {'name':['--balance'], 'type':lambda x: (str(x).lower() in ['true', '1', 'yes']), 'default':True, 'help':'True = dataset balancing is applied'},
+            {'name':['--sub_sample'], 'type':int, 'default':None, 'help':'Use a subsample of the dataset'}
             ]
         # Parse arguments
         parsed_args = create_args(parser_args, add_args)
@@ -32,8 +35,10 @@ class ModelTestArgs:
             {'name':['-ds'], 'type':str, 'default':None, 'help':'Name of the dataset'},
             {'name':['-m'], 'type':str, 'default':"NeuralNetworks", 'help':'Model name'},
             {'name':['-c'], 'type':str, 'default':None, 'help':'Name of the configuration file'},
-            {'name':['-t'], 'type':int, 'default':None, 'help':'Test set size'},
+            {'name':['--scale'], 'type':lambda x: (str(x).lower() in ['true', '1', 'yes']), 'default':True, 'help':'True = dataset scaling is applied'},
+            {'name':['--balance'], 'type':lambda x: (str(x).lower() in ['true', '1', 'yes']), 'default':True, 'help':'True = dataset balancing is applied'},
             {'name':['--dataset_type'], 'type':str, 'default':'test', 'help':'Dataset type to be used'},
+            {'name':['--store_outputs'], 'type':lambda x: (str(x).lower() in ['true', '1', 'yes']), 'default':False, 'help':'True = dataset scaling is applied'},
             {'name':['--sub_sample'], 'type':int, 'default':None, 'help':'Use a subsample of the dataset'}
             ]
         

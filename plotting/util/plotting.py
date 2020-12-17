@@ -108,6 +108,7 @@ def display_confusion_matrix(confusion_matrix, labels):
 
 def build_histogram(data, labels):
     #print(labels, data)
+
     plt.bar(labels, data)
     plt.show()
 

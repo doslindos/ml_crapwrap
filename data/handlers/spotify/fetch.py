@@ -10,12 +10,13 @@ class DataFetcher:
         self.sql_path = Path("data", "handlers", "spotify", "resources")
         self.sql_path = self.sql_path.joinpath(source)
         
-        # Dataset saving path
-        self.save_path = Path("data", "handlers", "spotify", "datasets", ds_name)
-
+        # Dataset saving folder
+        self.save_folder = Path("data", "handlers", "spotify", "datasets", ds_name)
+        
+        # DS save path
         save_name = ds_name+"_dataset.json"
 
-        self.save_path = self.save_path.joinpath(save_name)
+        self.save_path = self.save_folder.joinpath(save_name)
 
     def load_data(self, sample=None):
         if not self.save_path.exists():
