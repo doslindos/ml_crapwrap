@@ -5,20 +5,23 @@ conf = {
         'model': LogisticRegression(),
         'params':[{
             'penalty':[
-                    (5,), 
+                    'l2', 
                 ], 
-            'activation':[
-                'relu'
+            'dual':[
+                False
                 ], 
-            'solver':[
-                'adam',
+            'tol':[
+                1e-4,
                 ],
-            'learning_rate_init':[
-                0.001,
+            'C':[
+                1.0,
+                ],
+            'n_jobs':[
+                -2,
                 ],
             'max_iter':[
-                1000,
+                100
                 ]
             }],
-        'name':'MLPClassifier'
+        'name':'LogisticReg'
 }

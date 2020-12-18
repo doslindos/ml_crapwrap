@@ -76,4 +76,4 @@ class Model:
         print("Training finished...")
 
     def run(self, x, training=False):
-        return self.model.predict(x)
+        return self.model.predict_log_proba(x)
