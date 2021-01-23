@@ -1,8 +1,9 @@
 # Uncheck gpu or normal version of tensorflow
 #tensorflow-gpu
-#tensorflow
+tensorflow
 tensorflow-datasets
 scikit-learn
+imbalanced-learn
 matplotlib
 spotipy
 mysql-connector-python

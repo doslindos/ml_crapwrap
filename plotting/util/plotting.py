@@ -17,7 +17,7 @@ def format_data_to_plot(results, dims, function='PCA'):
     #   function:                   str, name of the dimension reduction function (sklearn.decomposition)
     # Out:
     #   (labels, data_lists)        tuple, (label array, x, y and possible z array)
-
+    
     #Order results by labels
     results = dict(sorted(results.items(), key=lambda kv: kv[0]))
     
@@ -108,6 +108,7 @@ def display_confusion_matrix(confusion_matrix, labels):
 
 def build_histogram(data, labels):
     #print(labels, data)
+
     plt.bar(labels, data)
     plt.show()
 

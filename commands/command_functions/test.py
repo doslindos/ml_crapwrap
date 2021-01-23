@@ -2,13 +2,9 @@ from . import Path, run_function, if_callable_class_function, test_functions
 from .utils import setup_results
 
 def test_model(parsed):
-    if 'gui' in parsed.test:
-        make_results = False
-    else:
-        make_results = True
-
-    results, model = setup_results(parsed, make_results)
-    if make_results and not results:
+    
+    results, model = setup_results(parsed)
+    if parsed.store_outputs and not results:
         exit()
     
     if isinstance(model, Path):

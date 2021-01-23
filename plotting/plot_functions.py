@@ -5,7 +5,7 @@ def scatter(labels, data):
     # In:
     #   labels:                     array, label for x[i] and y[i]
     #   data:                       array, contains x, y and possible z lists
-
+    
     fig = plt.figure()
     
     #2d plot setup

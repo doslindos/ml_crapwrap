@@ -24,5 +24,5 @@ def classifier(model_object, x, y, loss_function, optimizer, training=True):
     if training:
         optimizer.apply_gradients(zip(gradients, trainable_vars))
 
-    return loss
+    return (output, loss)
 
