@@ -1,4 +1,5 @@
 from .. import npsave, npload, nparray, npappend, npexpand, datetime, Path, jsondump, jsonload, signature, open_dirGUI, getcwd, argmax, get_module, pkldump, pklload
+from joblib import dump as joblibdump, load as joblibload
 
 def create_folder(path):
     # Creates an folder if it doesn't exist
@@ -107,8 +108,7 @@ def save_sk_model(model, path):
 
     #Save weights in currently created directory
     
-    with path.joinpath('model.pkl').open('wb') as f:
-        pkldump(model, f)
+    joblibdump(model, path.joinpath('model.joblib'))
     
     return path
 
@@ -120,10 +120,7 @@ def load_sk_model(path):
     #   model:                      Sklearn object
 
     #print(path)
-    with path.joinpath('model.pkl').open('rb') as f:
-        model = pklload(f)
-
-    return model
+    return joblibload(path.joinpath('model.joblib'))
 
 def select_weights(model_name):
     # Select weights to load
@@ -186,10 +183,6 @@ def read_prediction_file(path, prediction_filename='label_output.pkl', train=Fal
     # Out:
     #   results:                    dict, keys = labels and values = model outputs
     
-    if train:
-        prediction_filename = 'train_'+prediction_filename
-    else:
-        prediction_filename = 'test_'+prediction_filename
     
     if not path.joinpath(prediction_filename).exists():
         return False
@@ -217,22 +210,17 @@ def map_params(function, commandline_params, configuration={}):
                 print("You have to specify parameter ", param, "!")
     return func_params
 
-def create_prediction_file(path, dataset, model, prediction_filename='label_output.pkl', train=False):
+def create_prediction_file(path, dataset, model, prediction_filename=None):
     # Takes model output - label pairs and stores them in a pickle file
     # In:
     #   path:                       Path object, path where to save predictions file
     #   dataset:                    Tensorflow dataset object
     #   model:                      Model object
     #   prediction_filename:        str
-    #   train:                      bool, train or test dataset
     # Out:
     #   results:                    dict, keys = labels and values = model outputs
-    
-    if train:
-        prediction_filename = "train_"+prediction_filename
-    else:
-        prediction_filename = "test_"+prediction_filename
 
+    print("Creating a predictions file...")
     results = {}
 
     for batch in dataset.batch(dataset.cardinality()):
@@ -259,9 +247,10 @@ def create_prediction_file(path, dataset, model, prediction_filename='label_outp
             else:
                 #Stack outputs
                 results[label] = npappend(results[label], instance, axis=0)
-
-    with path.joinpath(prediction_filename).open('wb') as fs:
-        pkldump(results, fs)
+    
+    if prediction_filename is not None:
+        with path.joinpath(prediction_filename).open('wb') as fs:
+            pkldump(results, fs)
     
     return results
 

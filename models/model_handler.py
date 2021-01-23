@@ -27,27 +27,31 @@ class ModelHandler:
             command_params['datasets'] = (self.training_dataset, self.validation_dataset)
         self.model.train(**map_params(self.model.train, command_params, self.model.c))
 
-    def test(self, test_type=None, results=None, train=False):
+    def test(self, test_name=None, results=None, fname=None, dstype='test'):
         # Test function
         # Uses result.json from models outputs to run tests on the dataset
         # In:
-        #   test_type:                  str, name of the function in test_functions
+        #   test_name:                  str, name of the function in test_functions
         #   results:                    dict, key = label, value = numpy array of model outputs
-        #   train:                      bool, True to use training_dataset instead of test
+        #   fname:                      str, name of the predictions file
+        #   dstype:                     str, type of dataset to use
 
         if results is None:
             #Create label model output dict and save it
             path = self.model.load_path
             #print(path)
-            if train:
+            if dstype == 'train':
                 dataset = self.training_dataset
+            elif dstype == 'validation':
+                dataset = self.validation_dataset
             else:
                 dataset = self.test_dataset
             
-            results = create_prediction_file(path, dataset, self.model, train=train)
+            results = create_prediction_file(path, dataset, self.model, prediction_filename=fname)
         
         for label, result in results.items():
             print(label, ": ",result.shape)
         
-        if test_type is not None:
-            run_function(test_functions, test_type, {'results':results, 'model':self.model})
+        if test_name is not None:
+            run_function(test_functions, test_name, {'results':results, 'model':self.model})
+        return results

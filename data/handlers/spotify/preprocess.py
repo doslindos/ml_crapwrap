@@ -3,6 +3,7 @@ from sklearn.preprocessing import MinMaxScaler
 from third_party.scipy.util import print_description
 from numpy import array as nparray, unique as npunique
 from collections import Counter
+from pickle import dump as pkldump, load as pklload
 
 class DataPreprocessor:
 
@@ -49,47 +50,86 @@ class DataPreprocessor:
 
         return sample
 
-    def preprocess(self, dataset):
-        # Take features and popularities from the sample
-        # Also morph popularities into sets of tens
-        features = []
-        popularities = []
-        for d in dataset:
-            features.append(d['features'])
-            popularity = d['popularity']
+    def preprocess(self, dataset, processed_path, scale=True, balance=True, new_split=False):
+        
+        processed_path = processed_path.joinpath('processed.pkl')
+        if not processed_path.exists() or new_split:
+            # Take features and popularities from the sample
+            # Also morph popularities into sets of tens
+            features = []
+            popularities = []
+            for d in dataset:
+                feat = d['features']
+                # Take release year from date and add it to the features
+                date = d['release_date']
+                if '-' in date:
+                    split = date.split('-')
+                    if len(split) == 3:
+                        y, m, da = split
+                    elif len(split) == 2:
+                        y, m = split
+                    else:
+                        print("Not possible", date)
 
-            popularities.append(popularity)
-        
-        # Cast to float32
-        features = nparray(features, dtype="float32")
-        
-        features, duplicate_indexes, selected_indexes = self.check_unique(features)
-        labels = popularities
-        # NOTE try out filter
-        labels = [l for i, l in enumerate(labels) if i in selected_indexes]
-        
-        duplicate_instances = []
-        for i, d in enumerate(dataset):
-            if i in duplicate_indexes:
-                duplicate_instances.append(d)
+                elif len(date) == 4:
+                    y = date
+                else:
+                    print(date)
+                    exit()
+            
+                # Use only the decade
+                y = y[2:]
+            
+                # Add release year to the features
+                feat.append(y)
 
-        #print([d['name'] for d in duplicate_instances])
+                # Append to the feature list
+                features.append(feat)
+            
+                # Append to popularity list
+                popularity = d['popularity']
+                popularities.append(popularity)
         
-        # Apply scaling
-        features = self.preprocess_features(features)
-        labels = self.preprocess_labels(labels)
+            # Cast to float32
+            features = nparray(features, dtype="float32")
+            
+            features, duplicate_indexes, selected_indexes = self.check_unique(features)
+            labels = popularities
+            # NOTE try out filter
+            labels = [l for i, l in enumerate(labels) if i in selected_indexes]
+                
+            duplicate_instances = []
+            for i, d in enumerate(dataset):
+                if i in duplicate_indexes:
+                    duplicate_instances.append(d)
+
+            #print([d['name'] for d in duplicate_instances])
         
+            labels = self.preprocess_labels(labels)
+        
+            # Split dataset
+            datasets = split_dataset(features, labels, 0.33, True, 0.15)
+        
+            # Store split
+            pkldump(datasets, processed_path.open('wb'))
+
+        else:
+
+            # Load stored split
+            datasets = pklload(processed_path.open('rb'))
+        
+        if scale:
+            # Apply scaling
+            for dataset in datasets:
+                features = self.preprocess_features(dataset[0])
 
         # Description
-        print_description(features)
-        print_description(labels)
-        
-        # Split dataset
-        train, validation, test = split_dataset(features, labels, 0.33, True, 0.15)
+        #print_description(features)
+        #print_description(labels)
         
         # Wrap to tf dataset
-        train = tfdata.Dataset.from_tensor_slices((train[0], train[1]))
-        test = tfdata.Dataset.from_tensor_slices((test[0], test[1]))
-        validate = tfdata.Dataset.from_tensor_slices((validation[0], validation[1]))
+        train = tfdata.Dataset.from_tensor_slices((datasets[0][0], datasets[0][1]))
+        test = tfdata.Dataset.from_tensor_slices((datasets[1][0], datasets[1][1]))
+        validate = tfdata.Dataset.from_tensor_slices((datasets[2][0], datasets[2][1]))
         
         return (train, validate, test)
