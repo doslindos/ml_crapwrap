@@ -1,22 +1,7 @@
-from .. import Path, spotify_api_fetch, mysqldb_fetch, jsonload, rndsample
+from .. import spotify_api_fetch, mysqldb_fetch, jsonload, rndsample
 from collections import Counter
 
 class DataFetcher:
-    
-    def __init__(self, h_name, ds_name, source="popularities.sql"):
-        self.handler_name = h_name
-        self.dataset_name = ds_name
-        # Path to the sql file for mysql fetch
-        self.sql_path = Path("data", "handlers", "spotify", "resources")
-        self.sql_path = self.sql_path.joinpath(source)
-        
-        # Dataset saving folder
-        self.save_folder = Path("data", "handlers", "spotify", "datasets", ds_name)
-        
-        # DS save path
-        save_name = ds_name+"_dataset.json"
-
-        self.save_path = self.save_folder.joinpath(save_name)
 
     def load_data(self, sample=None):
         if not self.save_path.exists():

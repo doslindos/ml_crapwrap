@@ -1,12 +1,6 @@
 from .. import Path, load_with_tfds_load
 
 class DataFetcher:
-    
-    def __init__(self, h_name, ds_name, split=['train[:85%]', 'train[85%:]', 'test']):
-        self.handler_name = h_name
-        self.ds_name = ds_name
-        self.save_path = Path("data", "handlers", h_name, "datasets", ds_name)
-        self.split = split
 
     def load_data(self, split):
         # Fetch data from online with tfds_load function

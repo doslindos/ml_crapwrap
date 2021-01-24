@@ -28,36 +28,26 @@ class DatasetHandler:
         # Define paths to search a fetcher and preprocesser
         handler_path = Path("data", "handlers")
 
-        # Create DataFetcher
-        f_path = handler_path.joinpath(handler_name, "fetch.py")
-        if f_path.exists():
-            # Convert to posix to use import module
-            fetcher = import_module("data.handlers."+handler_name+".fetch")
-            self.data_fetcher = fetcher.DataFetcher(*params)
-        else:
-            import_error("DataFetcher", handler_name, f_path)
-
         # Create DataPreprocessor
         p_path = handler_path.joinpath(handler_name, "preprocess.py")
         if p_path.exists():
             processor = import_module("data.handlers."+handler_name+".preprocess")
-            self.data_preprocessor = processor.DataPreprocessor()
+            self.data_preprocessor = processor.DataPreprocessor(*params)
         else:
             import_error("DataPreprocessor", handler_name, p_path)
         
     def load(self, sub_sample=None):
         # Actual fetching of the data
-        self.data_fetcher.load_data(sub_sample)
+        self.data_preprocessor.load_data(sub_sample)
         
     def fetch_raw_data(self, sub_sample=None):
         # Fetches the unpreprocessed data
-        return self.data_fetcher.get_data(sub_sample)
+        return self.data_preprocessor.get_data(sub_sample)
 
     def fetch_preprocessed_data(self, sub_sample=None, scale=True, balance=True, new_split=False):
         dataset = self.fetch_raw_data(sub_sample)
         return self.data_preprocessor.preprocess(
                                     dataset, 
-                                    self.data_fetcher.save_folder, 
                                     scale, 
                                     balance, 
                                     new_split

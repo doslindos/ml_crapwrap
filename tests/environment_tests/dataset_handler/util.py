@@ -1,8 +1,11 @@
 from pathlib import Path
 import unittest
 from shutil import rmtree
+from tensorflow.data import Dataset as tfDataset
+
 from utils.utils import list_subfolder_in_folder, list_files_in_folder
 from data import DatasetHandler
+
 
 def loop_sub_handlers(handlers):
     for h_name, handler_values in handlers.items():
@@ -57,7 +60,7 @@ class DatasetHandlerTester(unittest.TestCase):
             handler = sub_handler[1]
             try:
                 handler.load(load_input)
-                print("Load works for ", sub_name)
+                print("Load works for ", sub_name, "\n")
             except Exception as e:
                 print("Handler ", sub_name, " load error: ", e)
 
@@ -67,12 +70,12 @@ class DatasetHandlerTester(unittest.TestCase):
             sub_name = sub_handler[0]
             handler = sub_handler[1]
             dataset = handler.fetch_preprocessed_data(sample)
-            print("Fetching works for ", sub_name)
+            print("Fetching works for ", sub_name, "\n")
             if sample is None:
                 self.assertIsInstance(dataset, tuple)
                 self.assertEqual(len(dataset), 3)
                 for ds in dataset:
-                    self.assertIsInstance(ds, tfdata.Dataset)
+                    self.assertIsInstance(ds, tfDataset)
 
 
     def destroy_test_datasets(self):
@@ -82,7 +85,7 @@ class DatasetHandlerTester(unittest.TestCase):
             sub_name = sub_handler[0]
             handler = sub_handler[1]
             # Get the path to sub handlers test dataset
-            path_to_test_ds = handler.data_fetcher.save_path
+            path_to_test_ds = handler.data_preprocessor.save_path
             if path_to_test_ds.is_dir():
                 # Removes recursively the defined folder
                 rmtree(path_to_test_ds)

@@ -1,11 +1,30 @@
-from .. import tfdata, split_dataset, preprocess_spotify_features
+from .. import tfdata, split_dataset, preprocess_spotify_features, Path
 from sklearn.preprocessing import MinMaxScaler
 from third_party.scipy.util import print_description
 from numpy import array as nparray, unique as npunique
 from collections import Counter
 from pickle import dump as pkldump, load as pklload
 
-class DataPreprocessor:
+from .fetch import DataFetcher
+
+class DataPreprocessor(DataFetcher):
+
+    def __init__(self, h_name, ds_name, source="popularities.sql"):
+        self.handler_name = h_name
+        self.dataset_name = ds_name
+        # Path to the sql file for mysql fetch
+        self.sql_path = Path("data", "handlers", "spotify", "resources")
+        self.sql_path = self.sql_path.joinpath(source)
+        
+        # Dataset saving folder
+        self.save_folder = Path("data", "handlers", "spotify", "datasets", ds_name)
+        
+        # DS save path
+        save_name = ds_name+"_dataset.json"
+
+        self.save_path = self.save_folder.joinpath(save_name)
+        
+        super()
 
     def check_unique(self, features):
         uniques, indexes, counts = npunique(features, return_index=True, return_counts=True, axis=0)
@@ -50,9 +69,9 @@ class DataPreprocessor:
 
         return sample
 
-    def preprocess(self, dataset, processed_path, scale=True, balance=True, new_split=False):
+    def preprocess(self, dataset, scale=True, balance=True, new_split=False):
         
-        processed_path = processed_path.joinpath('processed.pkl')
+        processed_path = self.save_folder.joinpath('processed.pkl')
         if not processed_path.exists() or new_split:
             # Take features and popularities from the sample
             # Also morph popularities into sets of tens

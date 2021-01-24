@@ -1,4 +1,4 @@
-from .. import tfdata, preprocess_spotify_features, split_dataset
+from .. import tfdata, preprocess_spotify_features, split_dataset, Path
 from sklearn.preprocessing import MinMaxScaler
 from imblearn.under_sampling import RandomUnderSampler
 from third_party.scipy.util import print_description
@@ -6,7 +6,24 @@ from numpy import array as nparray, unique as npunique
 from collections import Counter
 from pickle import dump as pkldump, load as pklload
 
-class DataPreprocessor:
+from .fetch import DataFetcher
+
+class DataPreprocessor(DataFetcher):
+    
+    def __init__(self, h_name, ds_name, source="billboard.json"):
+        self.handler_name = h_name
+        self.dataset_name = ds_name
+        # Path to the sql file for mysql fetch
+        self.resource_path = Path("data", "handlers", "billboard", "resources")
+        self.resource_path = self.resource_path.joinpath(source)
+        
+        # Dataset saving path
+        self.save_folder = Path("data", "handlers", "billboard", "datasets", ds_name)
+
+        save_name = ds_name+"_dataset.json"
+
+        self.save_path = self.save_folder.joinpath(save_name)
+        super()
 
     def check_unique(self, features):
         uniques, indexes, counts = npunique(features, return_index=True, return_counts=True, axis=0)
@@ -28,8 +45,8 @@ class DataPreprocessor:
         
         return self.feature_scaler.transform(features)
     
-    def preprocess(self, dataset, processed_path, scale=True, balance=True, new_split=False):
-        processed_path = processed_path.joinpath('processed.pkl')
+    def preprocess(self, dataset, scale=True, balance=True, new_split=False):
+        processed_path = self.save_folder.joinpath('processed.pkl')
         print(processed_path)
 
         if not processed_path.exists() or new_split:
