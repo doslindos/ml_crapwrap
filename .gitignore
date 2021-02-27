@@ -40,7 +40,7 @@ __pycache__/
 *.so
 
 #Local credential configurations
-#credentials.ini
+credentials.ini
 
 #created datasets and creation files
 data/handlers/**/datasets/
