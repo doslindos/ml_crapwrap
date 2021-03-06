@@ -3,6 +3,9 @@ from .MySql import MySQL_Connector
 from .Spotify_functions import SpotifyAPI
 from tensorflow_datasets import load as tfds_load
 from csv import reader as csv_reader
+from subprocess import call as sub_call
+
+# TODO Automatic input checking
 
 def spotify_api_fetch(data, save_path, filename=None, crawl_albums=False):
     # Creates a dataset with track_features
@@ -130,6 +133,59 @@ def mysqldb_fetch(path):
         cursor.close()
     
     return (data, labels)
+
+def kaggle_competition_download(competition_name, path, f=""):
+    # In:
+    #   competition_name:               str, Name of the competition
+    #   path:                           str, path where to save files
+    #   f:                              str, name of the file to be downloaded
+
+    input_check(competition_name, [str], "competition_name from kaggle_download")
+    input_check(path, [Path], "path from kaggle_download ")
+    input_check(f, [str], "ds_name from kaggle_download")
+    
+    # Create a sub folder "dataset" to store the fetched ds
+    if not path.parent.exists():
+        path.parent.mkdir()
+    
+    # Crate dataset folder if not exists
+    if not path.exists():
+        path.mkdir()
+    
+    # Build call
+    call = ["kaggle", "competitions", "download", competition_name, "-p", path]
+    if f:
+        call.append("-f "+f)
+    
+    # Make download call
+    print(call)
+    print(sub_call(call))
+
+def kaggle_download(ds_name, path, f=""):
+    # In:
+    #   ds_name:                        str, Dataset URL suffix
+    #   path:                           str, path where to save files
+    #   f:                              str, name of the file to be downloaded
+
+    input_check(ds_name, [str], "ds_name from kaggle_download")
+    input_check(path, [str], "path from kaggle_download ")
+    input_check(f, [str], "ds_name from kaggle_download")
+    
+    # Create a sub folder "dataset" to store the fetched ds
+    if not path.parent.exists():
+        path.parent.mkdir()
+    
+    # Crate dataset folder if not exists
+    if not path.exists():
+        path.mkdir()
+    
+    # Build call
+    call = ["kaggle", "datasets", "download", ds_name, "-p "+path]
+    if f:
+        call.append("-f "+f)
+
+    # Make download call
+    sub_call(call)
 
 def file_fetch(path):
     # This function is not currently in use but it's for reading csv files
