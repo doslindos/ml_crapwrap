@@ -158,7 +158,6 @@ def kaggle_competition_download(competition_name, path, f=""):
         call.append("-f "+f)
     
     # Make download call
-    print(call)
     print(sub_call(call))
 
 def kaggle_download(ds_name, path, f=""):
