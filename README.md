@@ -85,10 +85,9 @@ TODO
 
 This guide is for you who want to use MySQL data as a datset or Spotify API<br />
 
-If you are using mysql functions make sure that your project has a **credentials.py** defined.
-<br />Create it using credentials_example.py as a model.
-<br />1. Move to where you did install the project.<br />`cd <project dir>`
-<br />2. Copy credentials template.<br />`cp credentials_example.py credentials.py`
+If you are using mysql functions make sure that your project has a **credentials.ini** file with Mysql and Spotify credentials.
+<br />Create the file template:<br />`python init.py config`
+<br /><br />After this you can open the **credentials.ini** file and add your credentials. (more info about the credentials below)
 
 ## Spotify credentials
 Spotify credentials can be created at https://developer.spotify.com/dashboard/ 
@@ -96,7 +95,7 @@ Spotify credentials can be created at https://developer.spotify.com/dashboard/
 2. After sign-in, go to **Dashboard** and click **Create an app**, fill info and click **Create**.
 3. The **Dashboard** should now display your app. Click your app and you can find **CLIENT_ID** and **CLIENT_SECRET**.
 4. Put **CLIENT_ID** and **CLIENT_SECRET** hash (weird string of numbers and letters) to your **credentials.py** file, inside the empty strings:
-'client_id' and 'secret_key'.
+'client_id' and 'client_secret'.
 <br />Done.
 
 ## MySQL credentials
@@ -109,21 +108,18 @@ Fill in the MySQL_connector_params. <br />More information: https://dev.mysql.co
 # Command Info
 ## Fetch a dataset
 Dataset is created with `<command>` **dataset**.<br />
-#### Argument
 | Argument | Flag | Info |
 |-----------|------|---------|
 <br />TODO
 
 ## Train a model
 Training is called with `<command>` **train**.<br />
-#### Argument
 | Argument | Flag | Info |
 |-----------|------|---------|
 <br />TODO
 
 ## Test a model
 Test function are called with `<command>` **test**.<br />
-#### Argument
 | Argument | Flag | Info |
 |-----------|------|---------|
 <br />TODO
