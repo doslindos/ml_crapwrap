@@ -1,4 +1,4 @@
-from .. import nparray, npfloat32, npappend, npsave, jsondump, exit, Path
+from .. import nparray, npfloat32, npappend, npsave, jsondump, exit, Path, get_credentials
 from importlib.util import find_spec
 from spotipy import Spotify
 from spotipy.oauth2 import SpotifyClientCredentials
@@ -9,18 +9,18 @@ class SpotifyAPI:
     # Handles spotify api features
 
     def __init__(self):
-        if find_spec('credentials'):
-            from credentials import Spotify_API_credentials
+        # Get credentials
+        credentials = get_credentials('Spotify_API_credentials')
+
+        if credentials is not None:
 
             # Initializes spotipy api object
             # Uses Spotify account keys defined in credential.py
-            cc = SpotifyClientCredentials(
-                Spotify_API_credentials['client_id'], 
-                Spotify_API_credentials['secret_key']
-                )
+            cc = SpotifyClientCredentials(**credentials)
             self.sp = Spotify(client_credentials_manager=cc)
         else:
             print("Credentials file not found... Check guide Spotify credential!")
+            exit()
 
     def search_with_name(self, name, limit=10):
         # Make a spotify API search

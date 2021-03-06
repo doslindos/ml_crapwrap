@@ -10,3 +10,4 @@ mysql-connector-python
 matplotlib
 opencv-python
 Pillow
+kaggle

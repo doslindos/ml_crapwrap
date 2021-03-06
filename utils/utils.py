@@ -3,7 +3,23 @@ from tensorflow import squeeze as tfsqueeze, stack as tfstack
 
 from numpy import expand_dims as expdims
 
+from configparser import ConfigParser
+
 #TODO write comments
+
+def get_credentials(section_name):
+    # Init parser
+    parser = ConfigParser()
+    # Read .ini credentials
+    if Path('credentials.ini').exists():
+        parser.read('credentials.ini')
+    
+        if section_name in parser.sections():
+            return parser[section_name]
+    else:
+        print("Could not find credentials.ini file !")
+    
+    return None
 
 def list_files_in_folder(folder_path, suffix='*.py', full=False):
     files = Path(folder_path).glob(suffix)

@@ -3,7 +3,18 @@ from pathlib import Path
 
 if __name__ == '__main__':
     command = argv[1]
-    name = argv[2]
+    if command != 'config':
+        name = argv[2]
+
+    if command == 'config':
+        conffile = Path('configurationstest.ini')
+        if not conffile.exists():
+            # Create config template
+            with conffile.open("w") as f:
+                f.write("[Spotify_API_credentials]\nclient_id = \nclient_secret \n\n[MySQL_connector_params]\nhost = \nuser = \n; useing root without password leave this empty.\n; '' or "" doesn't work\npassword = \ndatabase = ")
+        else:
+            print("Configurations exists!")
+            exit()
 
     if command == 'handler':
         path_to_handler = Path("data", "handlers", name)
