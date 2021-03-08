@@ -3,7 +3,7 @@ from .GUI_config import conf
 from utils.modules import fetch_model
 from data.dataset_handler import DatasetHandler
 
-class ModelTester:
+class ModelTesterGUI:
 
     def __init__(self, model):
         self.root = Tk()

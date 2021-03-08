@@ -125,14 +125,17 @@ def load_sk_model(path):
 def select_weights(model_name):
     # Select weights to load
     # In:
-    #   model_name:                 str
+    #   model_name:                 str or None
     # Out:
     #   <path to selected model>:   str
     
-    path = Path(getcwd()).joinpath('models/'+model_name+'/saved_models/')
-    if not path.exists():
-        print("No saved models!")
-        exit()
+    if model_name is not None:
+        path = Path(getcwd()).joinpath('models/'+model_name+'/saved_models/')
+        if not path.exists():
+            print("No saved models!")
+            exit()
+    else:
+        path = Path(getcwd()).joinpath('models/')
     
     return open_dirGUI(path)    
 

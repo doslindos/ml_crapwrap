@@ -1,7 +1,7 @@
 from . import validate_args, GPU_config, create_args, if_callable_class_function, get_callable_class_functions
 from ..command_functions.plot import plot_model
 from ..command_functions.dataset import dataset_information
-from ..command_functions.test import test_model
+from ..command_functions.test import test_model, UI
 
 class ModelTestArgs:
     
@@ -78,3 +78,17 @@ class ModelTestArgs:
         plot_model(parsed_args)
 
 
+    def UI():
+        #Defines test function inputs and calls argument parser
+        parser_args = {'description':'Start a model UI'}
+        add_args = [
+            {'name':['command'], 'type':str, 'help':'Main command'},
+            {'name':['-ui'], 'type':str, 'default':'gui', 'help':'Model name'},
+            {'name':['-m'], 'type':str, 'default':None, 'help':'Model name'},
+            {'name':['-c'], 'type':str, 'default':None, 'help':'Name of the configuration file'},
+            ]
+        
+        # Parse arguments
+        parsed_args = create_args(parser_args, add_args)
+        # Run function
+        UI(parsed_args)

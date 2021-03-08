@@ -1,7 +1,5 @@
-from . import npeye, set_printoptions, nparray, cast, sklearn_functions, exit, display_confusion_matrix, ModelTester
+from . import npeye, set_printoptions, nparray, cast, sklearn_functions, exit, display_confusion_matrix, ModelTesterGUI, ModelTesterCLI
 from .util import parse_results
-
-from cmd import Cmd
 
 def classification_test(results, model, from_results=True):
     # Classification test
@@ -40,18 +38,9 @@ def testing_gui(model, results=None):
     #   results:                dict, label - model output pairs (Not used, just for quick fix)
     #   model:                  model object, model to be used
     
-    ModelTester(model)
+    ModelTesterGUI(model)
 
-def play_with_model(model, results=None):
+def testing_cli(model, results=None):
     
-    class ModelPrompt(Cmd):
-        
-        def do_exit(self, inp):
-            print("Hep")
-            return True
 
-        def do_feed_data_to_model(self, filepath):
-            print(model)
-            print(path)
-
-    ModelPrompt().cmdloop()
+    ModelTesterCLI(model)

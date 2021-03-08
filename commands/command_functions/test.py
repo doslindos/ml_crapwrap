@@ -1,5 +1,5 @@
 from . import Path, run_function, if_callable_class_function, test_functions
-from .utils import setup_results
+from .utils import setup_results, setup_ui
 
 def test_model(parsed):
     
@@ -18,3 +18,12 @@ def test_model(parsed):
     else:
         print("Test ", parsed.test, " not found in tests/model_tests/test_functions.py")
 
+def UI(parsed):
+
+    model = setup_ui(parsed)
+    print(model)
+
+    if parsed.ui == 'gui':
+        test_functions.testing_gui(model)
+    if parsed.ui == 'cli':
+        test_functions.testing_cli(model)

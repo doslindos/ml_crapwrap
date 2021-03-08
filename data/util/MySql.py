@@ -1,5 +1,5 @@
 from importlib.util import find_spec
-from GUI.GUI_functions import Mysql_data_selector, define_relation
+from UI.GUI_functions import Mysql_data_selector, define_relation
 import mysql.connector
 from .. import get_credentials
 

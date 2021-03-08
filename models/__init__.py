@@ -14,7 +14,7 @@ from utils.functions import run_function
 from utils.datasets import get_dataset_info
 from utils.modules import fetch_model, get_module
 
-from GUI.GUI_utils import open_dirGUI
+from UI.GUI_utils import open_dirGUI
 from .util.model_handling_functions import save_configuration, save_weights, save_sk_model, load_weights, load_sk_model, load_configuration, handle_init, create_prediction_file, map_params, select_weights, read_prediction_file
 
 from .model_handler import ModelHandler

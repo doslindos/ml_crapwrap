@@ -92,3 +92,19 @@ def pred_filename_generator(args):
         ds = args.dh
 
     return ds+"_"+dstype+'_label_output.pkl'
+
+def setup_ui(parsed):
+    print(parsed)
+    selected_model = select_weights(parsed.m)
+    print(selected_model)
+    print("Setting up the model...")
+    if parsed.m is None:
+        # SEARCH FROM PARENTS LIKE = AFTER models/
+        print(selected_model.parents)
+        model = selected_model.parent.parent.parent.name
+    else:
+        model = parsed.m
+
+    model_handler = ModelHandler(None, model, selected_model)
+
+    return model_handler.model
