@@ -183,7 +183,7 @@ class DataPreprocessor(KaggleCompetitionDataFetcher):
 
         # One hot encode PC and sex
         encoders['Sex_onehot'] = OneHotEncoder().fit(train['Sex'])
-        train['sex'] = encoders['Sex_onehot'].transform(train['Sex']).toarray()
+        train['Sex'] = encoders['Sex_onehot'].transform(train['Sex']).toarray()
         
         encoders['Pclass'] = OneHotEncoder().fit(list_to_2d_array(train['Pclass']))
         train['Pclass'] = encoders['Pclass'].transform(list_to_2d_array(train['Pclass'])).toarray()
@@ -200,9 +200,9 @@ class DataPreprocessor(KaggleCompetitionDataFetcher):
         #test['Pclass'] = minmax_scale(test['Pclass'])
         #test['Sex'] = minmax_scale(test['Sex'])
         # One hot encode PC and sex
-        encoders['Sex_onehot'].fit(test['Sex'])
+        #encoders['Sex_onehot'].fit(test['Sex'])
         test['Sex'] = encoders['Sex_onehot'].transform(test['Sex']).toarray()
-        
+      
         one_hot_pclass = OneHotEncoder()
         one_hot_pclass.fit(list_to_2d_array(test['Pclass']))
         test['Pclass'] = one_hot_pclass.transform(list_to_2d_array(test['Pclass'])).toarray()
@@ -210,7 +210,7 @@ class DataPreprocessor(KaggleCompetitionDataFetcher):
         # Transpose pclass and sex
         test['Pclass'] = list(map(list, zip(*test['Pclass'])))
         test['Sex'] = list(map(list, zip(*test['Sex'])))
-        
+
         # Fill missing ages with mean
         mean = npmean(nparray([i for i in test['Age'] if i != 0.0]))
         print(mean)
@@ -226,7 +226,7 @@ class DataPreprocessor(KaggleCompetitionDataFetcher):
         test['Fare'] = minmax_scale(test['Fare'])
         test['Cabin'] = minmax_scale(test['Cabin'])
         test['Embarked'] = minmax_scale(test['Embarked'])
-        
+       
         # zip back together
         survived = train['Survived']
         train_id_name = list(zip(train['PassengerId'], train['Name']))
@@ -261,7 +261,8 @@ class DataPreprocessor(KaggleCompetitionDataFetcher):
         print("Variance: ", desc.variance)
         print("Kurtosis: ", desc.kurtosis) 
             
-            
+        print(test_data.shape)
+        print(train_data.shape)
         # Wrap to tf dataset
         train = tfdata.Dataset.from_tensor_slices((train_data, survived))
         test = tfdata.Dataset.from_tensor_slices((test_data, None))

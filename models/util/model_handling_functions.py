@@ -1,4 +1,4 @@
-from .. import npsave, npload, nparray, npappend, npexpand, datetime, Path, jsondump, jsonload, signature, open_dirGUI, getcwd, argmax, get_module, pkldump, pklload
+from .. import npzeros, npsave, npload, nparray, npappend, npexpand, datetime, Path, jsondump, jsonload, signature, open_dirGUI, getcwd, argmax, get_module, pkldump, pklload
 from joblib import dump as joblibdump, load as joblibload
 
 def create_folder(path):
@@ -234,6 +234,9 @@ def create_prediction_file(path, dataset, model, prediction_filename=None):
         if hasattr(y, 'numpy'):
             y = y.numpy()
         
+        if y is None:
+            y = npzeros(out.shape[0])
+
         for i, label in enumerate(y):
             
             # If output values are not numpy arrays

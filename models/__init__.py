@@ -1,4 +1,4 @@
-from numpy import save as npsave, load as npload, array as nparray, append as npappend, expand_dims as npexpand, prod as npprod, argmax
+from numpy import save as npsave, load as npload, array as nparray, append as npappend, expand_dims as npexpand, prod as npprod, argmax, zeros as npzeros
 from datetime import datetime
 from json import dump as jsondump, load as jsonload
 from pickle import dump as pkldump, load as pklload
