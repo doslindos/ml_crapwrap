@@ -1,7 +1,7 @@
-from .. import Path, Tk, ttk, filedialog, StringVar, build_blueprint, open_fileGUI, open_dirGUI,  run_function, random_sample, get_dataset_info, show_data_tk, tfreshape, exit, dataset_generator, npargmax, nparray, npreshape, npsqueeze, tfdata, is_tensor, fetch_resource, take_image_screen, get_function_attr_values
+from .. import Path, Tk, ttk, filedialog, StringVar, build_blueprint, open_fileGUI, run_function, random_sample, get_dataset_info, show_data_tk, tfreshape, exit, dataset_generator, npargmax, nparray, npreshape, npsqueeze, tfdata, is_tensor, fetch_resource, take_image_screen, get_function_attr_values
 from .GUI_config import conf
 from utils.modules import fetch_model
-from data.dataset_handler import DatasetHandler
+from .util import get_dataset
 
 class ModelTesterGUI:
 
@@ -62,13 +62,7 @@ class ModelTesterGUI:
         self.setup_data(dataset=True)
     
     def select_dataset(self, change=False):
-        # Fetch the dataset path
-        dataset_path = Path(open_dirGUI(Path("data", "handlers")))
-
-        # Load the dataset
-        dataset = DatasetHandler(dataset_path.parent.parent.name, dataset_path.name, None)
-        dataset.load()
-        self.train, self.validate, self.test = dataset.fetch_preprocessed_data()
+        self.train, self.validate, self.test = get_dataset()
     
         self.dataset_change()    
 

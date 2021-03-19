@@ -21,7 +21,6 @@ def test_model(parsed):
 def UI(parsed):
 
     model = setup_ui(parsed)
-    print(model)
 
     if parsed.ui == 'gui':
         test_functions.testing_gui(model)

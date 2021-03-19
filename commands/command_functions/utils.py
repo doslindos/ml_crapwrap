@@ -94,17 +94,16 @@ def pred_filename_generator(args):
     return ds+"_"+dstype+'_label_output.pkl'
 
 def setup_ui(parsed):
-    print(parsed)
     selected_model = select_weights(parsed.m)
-    print(selected_model)
-    print("Setting up the model...")
     if parsed.m is None:
-        # SEARCH FROM PARENTS LIKE = AFTER models/
-        print(selected_model.parents)
-        model = selected_model.parent.parent.parent.name
+        # Search for the model name (after folder named models)
+        model_name = [ f.name for f in list(selected_model.parents) if str(f.parent.name) == 'models']
+        # In case there are 2 folders named models in path use the last one
+        # TODO make naming a model = models prohibited
+        model_name = model_name[-1]
     else:
-        model = parsed.m
+        model_name = parsed.m
 
-    model_handler = ModelHandler(None, model, selected_model)
+    model_handler = ModelHandler(None, model_name, selected_model)
 
     return model_handler.model
