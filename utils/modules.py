@@ -1,7 +1,7 @@
 from importlib import import_module
 from importlib.util import find_spec
 from . import Path
-from GUI import open_fileGUI
+from UI import open_fileGUI
 from utils.utils import recursive_file_search
 
 def get_module(path_to_module):

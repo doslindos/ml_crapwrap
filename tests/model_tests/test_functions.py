@@ -1,6 +1,5 @@
-from . import npeye, set_printoptions, nparray, cast, sklearn_functions, exit, display_confusion_matrix, ModelTester
+from . import npeye, set_printoptions, nparray, cast, sklearn_functions, exit, display_confusion_matrix, ModelTesterGUI, ModelTesterCLI
 from .util import parse_results
-
 
 def classification_test(results, model, from_results=True):
     # Classification test
@@ -39,4 +38,9 @@ def testing_gui(model, results=None):
     #   results:                dict, label - model output pairs (Not used, just for quick fix)
     #   model:                  model object, model to be used
     
-    ModelTester(model)
+    ModelTesterGUI(model)
+
+def testing_cli(model, results=None):
+    
+
+    ModelTesterCLI(model)

@@ -1,4 +1,4 @@
-from .. import npsave, npload, nparray, npappend, npexpand, datetime, Path, jsondump, jsonload, signature, open_dirGUI, getcwd, argmax, get_module, pkldump, pklload
+from .. import npzeros, npsave, npload, nparray, npappend, npexpand, datetime, Path, jsondump, jsonload, signature, open_dirGUI, getcwd, argmax, get_module, pkldump, pklload
 from joblib import dump as joblibdump, load as joblibload
 
 def create_folder(path):
@@ -125,14 +125,17 @@ def load_sk_model(path):
 def select_weights(model_name):
     # Select weights to load
     # In:
-    #   model_name:                 str
+    #   model_name:                 str or None
     # Out:
     #   <path to selected model>:   str
     
-    path = Path(getcwd()).joinpath('models/'+model_name+'/saved_models/')
-    if not path.exists():
-        print("No saved models!")
-        exit()
+    if model_name is not None:
+        path = Path(getcwd()).joinpath('models/'+model_name+'/saved_models/')
+        if not path.exists():
+            print("No saved models!")
+            exit()
+    else:
+        path = Path(getcwd()).joinpath('models/')
     
     return open_dirGUI(path)    
 
@@ -234,6 +237,9 @@ def create_prediction_file(path, dataset, model, prediction_filename=None):
         if hasattr(y, 'numpy'):
             y = y.numpy()
         
+        if y is None:
+            y = npzeros(out.shape[0])
+
         for i, label in enumerate(y):
             
             # If output values are not numpy arrays

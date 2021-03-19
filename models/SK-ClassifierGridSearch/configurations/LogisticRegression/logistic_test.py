@@ -1,6 +1,7 @@
 from sklearn.linear_model import LogisticRegression
 
 
+
 conf = {
         'model': LogisticRegression(),
         'params':[{
