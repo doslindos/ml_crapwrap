@@ -28,7 +28,7 @@ class CreateArgs:
         # Run function
         create_dataset(parsed_args)
 
-    def train(args=None):
+    def model(args=None):
         # args:                 Namespace object containing arguments, if None it is created. (Used mainly for testing)
         
         if args is None:

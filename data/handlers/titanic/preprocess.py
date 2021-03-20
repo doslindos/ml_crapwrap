@@ -1,13 +1,13 @@
-from .. import tfdata, rndsample, jsonload, jsondump, Path
+from .. import tfdata, rndsample, jsonload, jsondump, Path, make_tfrecords, read_tfrecords, save_encoders
 from ...util.fetchers.kaggle.kaggle_fetcher import KaggleCompetitionDataFetcher
 
 from zipfile import ZipFile
 from csv import reader as csv_reader
 
-from sklearn.preprocessing import OrdinalEncoder, OneHotEncoder, minmax_scale
+from sklearn.preprocessing import OrdinalEncoder, OneHotEncoder, MinMaxScaler
 from sklearn.model_selection import train_test_split
 from collections import Counter
-from numpy import mean as npmean, array as nparray, float32 as npfloat32
+from numpy import mean as npmean, array as nparray, float32 as npfloat32, append as npappend
 from scipy import stats
 
 def resolve_type(column):
@@ -119,153 +119,153 @@ class DataPreprocessor(KaggleCompetitionDataFetcher):
 
     def preprocess(self, dataset, scale=True, balance=True, new_split=False):
         
-        # Preprocess original data
-        ds = {}
-        for key, data in dataset.items():
-            tags = data[0]
-            columns = list(zip(*data[1]))
-            ds[key] =  {tag: columns[i] for i, tag in enumerate(tags) }
-            print(ds.keys())
-        train = ds['train']
-        test = ds['test']
-        print(train.keys())
-        print(test.keys())
+        save_path = self.save_folder.joinpath("processed")
+        print(save_path)
+        if not save_path.exists():
+            # Preprocess original data
+            ds = {}
+            for key, data in dataset.items():
+                tags = data[0]
+                columns = list(zip(*data[1]))
+                ds[key] =  {tag: columns[i] for i, tag in enumerate(tags) }
+            train = ds['train']
+            test = ds['test']
 
-        
-        encoders = {}
-        encoders['Sex_ordinal'] = OrdinalEncoder().fit(list_to_2d_array(train['Sex'] + test['Sex']))
-        # Transform values
-        train['Sex'] = encoders['Sex_ordinal'].transform(list_to_2d_array(train['Sex']))
-        test['Sex'] = encoders['Sex_ordinal'].transform(list_to_2d_array(test['Sex']))
-        
-        encoders['Cabin'] = OrdinalEncoder().fit(list_to_2d_array(train['Cabin'] + test['Cabin']))
-        # Transform values
-        train['Cabin'] = encoders['Cabin'].transform(list_to_2d_array(train['Cabin']))
-        test['Cabin'] = encoders['Cabin'].transform(list_to_2d_array(test['Cabin']))
-        
-        encoders['Embarked'] = OrdinalEncoder().fit(list_to_2d_array(train['Embarked'] + test['Embarked']))
-        # Transform values
-        train['Embarked'] = encoders['Embarked'].transform(list_to_2d_array(train['Embarked']))
-        test['Embarked'] = encoders['Embarked'].transform(list_to_2d_array(test['Embarked']))
-        
-        # Take a look of ticket values
-        tickets = []
-        letter_tickets = []
-        for ticket in train['Ticket']:
-            try:
-                ticket = int(ticket)
-                tickets.append(ticket)
-            except:
-                letter_tickets.append(ticket)
-
-        for ticket in test['Ticket']:
-            try:
-                ticket = int(ticket)
-                tickets.append(ticket)
-            except:
-                letter_tickets.append(ticket)
-        
-        # Scale
-        
-        # Fill missing ages with mean
-        mean = npmean(nparray([i for i in train['Age'] if i != 0.0]))
-        train['Age'] = [i if i != 0.0 else mean for i in train['Age']]
-        
-        # Feature engineer is travelling alone
-        train['Alone'] = [0 if sum(with_num) < 1 else 1 for with_num in list(zip(train['SibSp'], train['Parch']))]
-        # If under 15 and alone add 1 because higly unlikely
-        train['Alone'] = [alone if alone == 0 and train['Age'][i] > 15 else 1 for i, alone in enumerate(train['Alone'])]
-        #train['SibSp'] = minmax_scale(train['SibSp'])
-        #train['Parch'] = minmax_scale(train['Parch'])
-        
-        #train['Pclass'] = minmax_scale(train['Pcalss'])
-        #train['Sex'] = minmax_scale(train['Sex'])
-
-        # One hot encode PC and sex
-        encoders['Sex_onehot'] = OneHotEncoder().fit(train['Sex'])
-        train['Sex'] = encoders['Sex_onehot'].transform(train['Sex']).toarray()
-        
-        encoders['Pclass'] = OneHotEncoder().fit(list_to_2d_array(train['Pclass']))
-        train['Pclass'] = encoders['Pclass'].transform(list_to_2d_array(train['Pclass'])).toarray()
-        
-        # Transpose pclass and sex
-        train['Pclass'] = list(map(list, zip(*train['Pclass'])))
-        train['Sex'] = list(map(list, zip(*train['Sex'])))
-        
-        train['Age'] = minmax_scale(train['Age'])
-        train['Fare'] = minmax_scale(train['Fare'])
-        train['Cabin'] = minmax_scale(train['Cabin'])
-        train['Embarked'] = minmax_scale(train['Embarked'])
-
-        #test['Pclass'] = minmax_scale(test['Pclass'])
-        #test['Sex'] = minmax_scale(test['Sex'])
-        # One hot encode PC and sex
-        #encoders['Sex_onehot'].fit(test['Sex'])
-        test['Sex'] = encoders['Sex_onehot'].transform(test['Sex']).toarray()
-      
-        one_hot_pclass = OneHotEncoder()
-        one_hot_pclass.fit(list_to_2d_array(test['Pclass']))
-        test['Pclass'] = one_hot_pclass.transform(list_to_2d_array(test['Pclass'])).toarray()
-        
-        # Transpose pclass and sex
-        test['Pclass'] = list(map(list, zip(*test['Pclass'])))
-        test['Sex'] = list(map(list, zip(*test['Sex'])))
-
-        # Fill missing ages with mean
-        mean = npmean(nparray([i for i in test['Age'] if i != 0.0]))
-        print(mean)
-        test['Age'] = [i if i != 0.0 else mean for i in test['Age']]
-        test['Age'] = minmax_scale(test['Age'])
-        
-        # Feature engineer is travelling alone
-        test['Alone'] = [0 if sum(with_num) < 1 else 1 for with_num in list(zip(test['SibSp'], test['Parch']))]
-        # If under 15 and alone add 1 because higly unlikely
-        test['Parch'] = [alone if alone == 0 and test['Age'][i] > 15 else 1 for i, alone in enumerate(test['Alone'])]
-        #test['SibSp'] = minmax_scale(test['SibSp'])
-        #test['Parch'] = minmax_scale(test['Parch'])
-        test['Fare'] = minmax_scale(test['Fare'])
-        test['Cabin'] = minmax_scale(test['Cabin'])
-        test['Embarked'] = minmax_scale(test['Embarked'])
-       
-        # zip back together
-        survived = train['Survived']
-        train_id_name = list(zip(train['PassengerId'], train['Name']))
-        train_data = nparray(list(zip(*train['Pclass'], *train['Sex'], train['Age'], train['Alone'], train['Fare'], train['Cabin'], train['Embarked'])), dtype=npfloat32)
-        
-        #print(self.processed_train_data.shape)
-        #for p in self.processed_train_data:
-        #    for i in p:
-        #        print(type(i))
-
-        #    break
-        desc = stats.describe(train_data)
-        print("Min: ", desc.minmax[0])
-        print("Max: ", desc.minmax[1])
-        print("Mean: ", desc.mean)
-        print("Variance: ", desc.variance)
-        print("Kurtosis: ", desc.kurtosis) 
-        #exit()
-        
-        print(train_data.shape)
-        # Split the training set to train and validation set
-        train_data, validation_data, survived, validation_survived = train_test_split(train_data, survived, test_size=0.33)
-        
-        test_id_name = list(zip(test['PassengerId'], test['Name']))
-        test_data = nparray(list(zip(*test['Pclass'], *test['Sex'], test['Age'], test['Alone'], test['Fare'], test['Cabin'], test['Embarked'])), dtype=npfloat32)
-
-
-        desc = stats.describe(test_data)
-        print("Min: ", desc.minmax[0])
-        print("Max: ", desc.minmax[1])
-        print("Mean: ", desc.mean)
-        print("Variance: ", desc.variance)
-        print("Kurtosis: ", desc.kurtosis) 
+            final_order = ['Pclass', 'Sex', 'Age', 'Alone', 'Fare', 'Cabin', 'Embarked']
             
-        print(test_data.shape)
-        print(train_data.shape)
-        # Wrap to tf dataset
-        train = tfdata.Dataset.from_tensor_slices((train_data, survived))
-        test = tfdata.Dataset.from_tensor_slices((test_data, None))
-        validate = tfdata.Dataset.from_tensor_slices((validation_data, validation_survived))
-        
+            encoders = {'Order': final_order, 'Encoders':[]}
+            encoders['Encoders'] = (
+                    OneHotEncoder(),
+                    (OrdinalEncoder(), OneHotEncoder()),
+                    MinMaxScaler(),
+                    None,
+                    MinMaxScaler(),
+                    (OrdinalEncoder(), MinMaxScaler()),
+                    (OrdinalEncoder(), MinMaxScaler())
+                    )
+            encoders['Type'] = "Column"
+
+            enc = encoders['Encoders']
+            
+            # Transform Pclass
+            enc[0].fit(list_to_2d_array(train['Pclass']))
+            train['Pclass'] = enc[0].transform(list_to_2d_array(train['Pclass'])).toarray()
+            test['Pclass'] = enc[0].transform(list_to_2d_array(test['Pclass'])).toarray()
+            
+            # Transpose pclass and sex
+            train['Pclass'] = list(map(list, zip(*train['Pclass'])))
+            test['Pclass'] = list(map(list, zip(*test['Pclass'])))
+            
+            # Transform Sex
+            # Ordinal encoding
+            enc[1][0].fit(list_to_2d_array(train['Sex'] + test['Sex']))
+            
+            train['Sex'] = enc[1][0].transform(list_to_2d_array(train['Sex']))
+            test['Sex'] = enc[1][0].transform(list_to_2d_array(test['Sex']))
+            
+            # One hot encoding
+            enc[1][1].fit(train['Sex'])
+            train['Sex'] = enc[1][1].transform(train['Sex']).toarray()
+            test['Sex'] = enc[1][1].transform(test['Sex']).toarray()
+            
+            train['Sex'] = list(map(list, zip(*train['Sex'])))
+            test['Sex'] = list(map(list, zip(*test['Sex'])))
+            
+            # Transform Age
+            # Fill missing ages with mean
+            mean = npmean(nparray([i for i in train['Age'] if i != 0.0]))
+            train['Age'] = [i if i != 0.0 else mean for i in train['Age']]
+            
+            # Fill missing ages with mean
+            mean = npmean(nparray([i for i in test['Age'] if i != 0.0]))
+            test['Age'] = [i if i != 0.0 else mean for i in test['Age']]
+            
+            enc[2].fit(list_to_2d_array(train['Age'] + test['Age']))
+            train['Age'] = enc[2].transform(list_to_2d_array(train['Age']))
+            test['Age'] = enc[2].transform(list_to_2d_array(test['Age']))
+
+            # Transform Alone
+            # Feature engineer is travelling alone
+            train['Alone'] = [0 if sum(with_num) < 1 else 1 for with_num in list(zip(train['SibSp'], train['Parch']))]
+            test['Alone'] = [0 if sum(with_num) < 1 else 1 for with_num in list(zip(test['SibSp'], test['Parch']))]
+            
+            # If under 15 and alone add 1 because higly unlikely
+            train['Alone'] = [alone if alone == 0 and train['Age'][i] > 15 else 1 for i, alone in enumerate(train['Alone'])]
+            
+            # If under 15 and alone add 1 because higly unlikely
+            test['Alone'] = [alone if alone == 0 and test['Age'][i] > 15 else 1 for i, alone in enumerate(test['Alone'])]
+            
+            # Transform Fare
+     
+            enc[4].fit(list_to_2d_array(train['Fare'] + test['Fare']))
+            train['Fare'] = enc[4].transform(list_to_2d_array(train['Fare']))
+            test['Fare'] = enc[4].transform(list_to_2d_array(test['Fare']))
+            
+            # Transform Cabin
+            enc[5][0].fit(list_to_2d_array(train['Cabin'] + test['Cabin']))
+            train['Cabin'] = enc[5][0].transform(list_to_2d_array(train['Cabin']))
+            
+            test['Cabin'] = enc[5][0].transform(list_to_2d_array(test['Cabin']))
+            enc[5][1].fit(npappend(train['Cabin'],test['Cabin'], 0))
+            train['Cabin'] = enc[5][1].transform(train['Cabin'])
+            test['Cabin'] = enc[5][1].transform(test['Cabin'])
+            
+            # Transform Embarked
+            enc[6][0].fit(list_to_2d_array(train['Embarked'] + test['Embarked']))
+            train['Embarked'] = enc[6][0].transform(list_to_2d_array(train['Embarked']))
+            test['Embarked'] = enc[6][0].transform(list_to_2d_array(test['Embarked']))
+            
+            enc[6][1].fit(npappend(train['Embarked'], test['Embarked'], 0))
+            train['Embarked'] = enc[6][1].transform(train['Embarked'])
+            test['Embarked'] = enc[6][1].transform(test['Embarked'])
+
+            # zip back together
+            survived = train['Survived']
+            train_id_name = list(zip(train['PassengerId'], train['Name']))
+            train_data = nparray(list(zip(*train['Pclass'], *train['Sex'], train['Age'], train['Alone'], train['Fare'], train['Cabin'], train['Embarked'])), dtype=npfloat32)
+            
+            desc = stats.describe(train_data)
+            print("Min: ", desc.minmax[0])
+            print("Max: ", desc.minmax[1])
+            print("Mean: ", desc.mean)
+            print("Variance: ", desc.variance)
+            print("Kurtosis: ", desc.kurtosis) 
+            #exit()
+            
+            # Split the training set to train and validation set
+            train_data, validation_data, survived, validation_survived = train_test_split(train_data, survived, test_size=0.33)
+            
+            test_id_name = list(zip(test['PassengerId'], test['Name']))
+            test_data = nparray(list(zip(*test['Pclass'], *test['Sex'], test['Age'], test['Alone'], test['Fare'], test['Cabin'], test['Embarked'])), dtype=npfloat32)
+
+
+            desc = stats.describe(test_data)
+            print("Min: ", desc.minmax[0])
+            print("Max: ", desc.minmax[1])
+            print("Mean: ", desc.mean)
+            print("Variance: ", desc.variance)
+            print("Kurtosis: ", desc.kurtosis) 
+                
+            print(test_data.shape)
+            print(train_data.shape)
+            # Wrap to tf dataset
+            train = tfdata.Dataset.from_tensor_slices((train_data, survived))
+            test = tfdata.Dataset.from_tensor_slices((test_data, None))
+            validate = tfdata.Dataset.from_tensor_slices((validation_data, validation_survived))
+            
+            dataset = {
+                    "train": train,
+                    "validate": validate,
+                    "test": test
+                    }
+            save_path.mkdir()
+            make_tfrecords(save_path, dataset)
+            save_encoders(save_path, encoders)
+
+        else:
+            datasets = read_tfrecords(save_path)
+            train = datasets['train']
+            validate = datasets['validate']
+            test = datasets['test']
+
         return (train, validate, test)

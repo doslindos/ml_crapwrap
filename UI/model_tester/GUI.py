@@ -2,6 +2,7 @@ from .. import Path, Tk, ttk, filedialog, StringVar, build_blueprint, open_fileG
 from .GUI_config import conf
 from utils.modules import fetch_model
 from .util import get_dataset
+from data.util.utils import load_encoders
 
 class ModelTesterGUI:
 
@@ -40,10 +41,26 @@ class ModelTesterGUI:
             self.model = fetch_model(self.model_name, self.conf_name)
 
         
+        data = fetch_resource(path)
+        
         # Preprocess data
+        print("Select encoders...")
+        encoders = load_encoders(open_fileGUI(Path.cwd().joinpath("data", "handlers")))
+        
+        print(encoders)
 
+        if encoders['Type'] == 'Columns':
+            for i, enc in enumerate(encoders['Encoders']):
+                for e in enc:
+                    data[i] = e.transform(data[i])
+        elif encoders['Type'] == 'Image':
+            data, label = encoders['Encode'](data)
+            
+        self.data = data
+        self.label = label
         # Set up the data to display in the GUI
         self.setup_data(dataset=False)
+        self.show_instance()
 
     def dataset_change(self):
         if self.ds.get() == "Training":

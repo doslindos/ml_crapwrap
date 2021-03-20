@@ -23,7 +23,7 @@ def dataset_generator(dataset, batch_size):
     #   a batch of the dataset
 
     if hasattr(dataset, 'batch'):
-        dataset = dataset.batch(batch_size)
+        dataset = dataset.shuffle(100).batch(batch_size)
 
     for inst in dataset:
         yield get_xy(inst)

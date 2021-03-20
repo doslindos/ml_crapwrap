@@ -1,5 +1,5 @@
 # Uncheck gpu or normal version of tensorflow
-tensorflow-gpu==2.3.0
+#tensorflow-gpu==2.3.0
 #tensorflow
 tensorflow-datasets
 scikit-learn
