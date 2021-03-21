@@ -10,6 +10,14 @@ import time
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import classification_report, accuracy_score
 
+from importlib import import_module
+
+from copy import deepcopy
+
+def get_class(module, class_name):
+    module = import_module(module)
+    return getattr(module, class_name)
+
 class Model:
 
     def __init__(self, conf_name):
@@ -31,6 +39,38 @@ class Model:
     
     def call_model_attributes(self, attribute, inputs):
         return getattr(self.model, attribute)(**inputs)
+    
+    def build_model(self, model):
+        # Get model
+        m = get_class(model['module'], model['model'])
+        
+        print(model)
+        # Handle stacked models with estimators
+        if 'params' in model.keys():
+            params = deepcopy(model['params'])
+            for key, values in params.items():
+                if 'estimators' == key:
+                    for i, estimator in enumerate(values):
+                        c = get_class(estimator['module'], estimator['model'])
+                        e = c(**estimator['params'])
+                        params['estimators'][i] = (estimator['name'], e)
+                        print(model['params']['estimators'][i])
+                        print(params['estimators'][i])
+
+            # Init model
+            m = m(**params)
+        else:
+            m = m()
+
+                            
+        # Handle stacked models with estimators as params
+        search_params = deepcopy(model['search_params'])
+        for i, params in enumerate(search_params):
+            if 'base_estimator' in params.keys():
+                for j, estimator in enumerate(params['base_estimator']):
+                    search_params[i]['base_estimator'][j] = get_class(estimator['module'], estimator['model'])(**estimator['params'])
+                
+        return (m, search_params)
 
     def train(self, datasets):
         
@@ -49,9 +89,11 @@ class Model:
             y = y.numpy()
             for score in scores:
                 for model in self.models:
+                    m, search_params = self.build_model(model)
+                    print(model)
                     begin = time.time()
-                    clf = GridSearchCV(model['model'], model['params'], scoring='%s_macro' % score)
-                    print("Training model: ", model['name'])
+                    clf = GridSearchCV(m, search_params, scoring='%s_macro' % score)
+                    print("Training model: ", model['model'])
                     print("Scoring: ", score)
                     clf.fit(x, y)
                     clfs.append(clf)
@@ -64,6 +106,11 @@ class Model:
                         report = classification_report(validate_y, clf.predict(validate_x))
                         print(report)
                         accuracy = accuracy_score(validate_y, clf.predict(validate_x))
+                        #clf.fit(validate_x.numpy(), validate_y.numpy())
+                        
+                        #report2 = classification_report(validate_y, clf.predict(validate_x))
+                        #print(report2)
+                        #accuracy2 = accuracy_score(validate_y, clf.predict(validate_x))
                         if 'accuracy' not in acc_pred.keys():
                             acc_pred['accuracy'] = accuracy
                             acc_pred['estimator'] = clf
@@ -78,4 +125,11 @@ class Model:
         print("Training finished...")
 
     def run(self, x, training=False):
-        return self.model.transform(x)
+        print(self.model.best_estimator_)
+        try:
+            return self.model.transform(x)
+        except AttributeError:
+            try:
+                return self.model.predict(x)
+            except AttributeError:
+                return self.model.predict_proba(x)

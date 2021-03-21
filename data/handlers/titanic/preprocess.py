@@ -1,4 +1,4 @@
-from .. import tfdata, rndsample, jsonload, jsondump, Path, make_tfrecords, read_tfrecords, save_encoders
+from .. import tfdata, rndsample, jsonload, jsondump, Path, save_tfdataset, load_tfdataset, save_encoders
 from ...util.fetchers.kaggle.kaggle_fetcher import KaggleCompetitionDataFetcher
 
 from zipfile import ZipFile
@@ -133,24 +133,21 @@ class DataPreprocessor(KaggleCompetitionDataFetcher):
 
             final_order = ['Pclass', 'Sex', 'Age', 'Alone', 'Fare', 'Cabin', 'Embarked']
             
-            encoders = {'Order': final_order, 'Encoders':[]}
-            encoders['Encoders'] = (
-                    OneHotEncoder(),
-                    (OrdinalEncoder(), OneHotEncoder()),
-                    MinMaxScaler(),
-                    None,
-                    MinMaxScaler(),
-                    (OrdinalEncoder(), MinMaxScaler()),
-                    (OrdinalEncoder(), MinMaxScaler())
-                    )
-            encoders['Type'] = "Column"
+            encoders = (
+                    {'Input': 0, 'Encoder':OneHotEncoder()},
+                    {'Input': 1, 'Encoder':(OrdinalEncoder(), OneHotEncoder())},
+                    {'Input': 5, 'Encoder':OrdinalEncoder()},
+                    {'Input': 6, 'Encoder':OrdinalEncoder()},
 
-            enc = encoders['Encoders']
+                    {'Input': 'All', 'Encoder':MinMaxScaler()},
+                    )
+
+            enc = encoders
             
             # Transform Pclass
-            enc[0].fit(list_to_2d_array(train['Pclass']))
-            train['Pclass'] = enc[0].transform(list_to_2d_array(train['Pclass'])).toarray()
-            test['Pclass'] = enc[0].transform(list_to_2d_array(test['Pclass'])).toarray()
+            enc[0]['Encoder'].fit(list_to_2d_array(train['Pclass']))
+            train['Pclass'] = enc[0]['Encoder'].transform(list_to_2d_array(train['Pclass'])).toarray()
+            test['Pclass'] = enc[0]['Encoder'].transform(list_to_2d_array(test['Pclass'])).toarray()
             
             # Transpose pclass and sex
             train['Pclass'] = list(map(list, zip(*train['Pclass'])))
@@ -158,15 +155,15 @@ class DataPreprocessor(KaggleCompetitionDataFetcher):
             
             # Transform Sex
             # Ordinal encoding
-            enc[1][0].fit(list_to_2d_array(train['Sex'] + test['Sex']))
+            enc[1]['Encoder'][0].fit(list_to_2d_array(train['Sex'] + test['Sex']))
             
-            train['Sex'] = enc[1][0].transform(list_to_2d_array(train['Sex']))
-            test['Sex'] = enc[1][0].transform(list_to_2d_array(test['Sex']))
+            train['Sex'] = enc[1]['Encoder'][0].transform(list_to_2d_array(train['Sex']))
+            test['Sex'] = enc[1]['Encoder'][0].transform(list_to_2d_array(test['Sex']))
             
             # One hot encoding
-            enc[1][1].fit(train['Sex'])
-            train['Sex'] = enc[1][1].transform(train['Sex']).toarray()
-            test['Sex'] = enc[1][1].transform(test['Sex']).toarray()
+            enc[1]['Encoder'][1].fit(train['Sex'])
+            train['Sex'] = enc[1]['Encoder'][1].transform(train['Sex']).toarray()
+            test['Sex'] = enc[1]['Encoder'][1].transform(test['Sex']).toarray()
             
             train['Sex'] = list(map(list, zip(*train['Sex'])))
             test['Sex'] = list(map(list, zip(*test['Sex'])))
@@ -180,10 +177,6 @@ class DataPreprocessor(KaggleCompetitionDataFetcher):
             mean = npmean(nparray([i for i in test['Age'] if i != 0.0]))
             test['Age'] = [i if i != 0.0 else mean for i in test['Age']]
             
-            enc[2].fit(list_to_2d_array(train['Age'] + test['Age']))
-            train['Age'] = enc[2].transform(list_to_2d_array(train['Age']))
-            test['Age'] = enc[2].transform(list_to_2d_array(test['Age']))
-
             # Transform Alone
             # Feature engineer is travelling alone
             train['Alone'] = [0 if sum(with_num) < 1 else 1 for with_num in list(zip(train['SibSp'], train['Parch']))]
@@ -195,35 +188,31 @@ class DataPreprocessor(KaggleCompetitionDataFetcher):
             # If under 15 and alone add 1 because higly unlikely
             test['Alone'] = [alone if alone == 0 and test['Age'][i] > 15 else 1 for i, alone in enumerate(test['Alone'])]
             
-            # Transform Fare
-     
-            enc[4].fit(list_to_2d_array(train['Fare'] + test['Fare']))
-            train['Fare'] = enc[4].transform(list_to_2d_array(train['Fare']))
-            test['Fare'] = enc[4].transform(list_to_2d_array(test['Fare']))
             
             # Transform Cabin
-            enc[5][0].fit(list_to_2d_array(train['Cabin'] + test['Cabin']))
-            train['Cabin'] = enc[5][0].transform(list_to_2d_array(train['Cabin']))
+            enc[2]['Encoder'].fit(list_to_2d_array(train['Cabin'] + test['Cabin']))
             
-            test['Cabin'] = enc[5][0].transform(list_to_2d_array(test['Cabin']))
-            enc[5][1].fit(npappend(train['Cabin'],test['Cabin'], 0))
-            train['Cabin'] = enc[5][1].transform(train['Cabin'])
-            test['Cabin'] = enc[5][1].transform(test['Cabin'])
+            train['Cabin'] = enc[2]['Encoder'].transform(list_to_2d_array(train['Cabin']))
+            test['Cabin'] = enc[2]['Encoder'].transform(list_to_2d_array(test['Cabin']))
             
             # Transform Embarked
-            enc[6][0].fit(list_to_2d_array(train['Embarked'] + test['Embarked']))
-            train['Embarked'] = enc[6][0].transform(list_to_2d_array(train['Embarked']))
-            test['Embarked'] = enc[6][0].transform(list_to_2d_array(test['Embarked']))
+            enc[3]['Encoder'].fit(list_to_2d_array(train['Embarked'] + test['Embarked']))
             
-            enc[6][1].fit(npappend(train['Embarked'], test['Embarked'], 0))
-            train['Embarked'] = enc[6][1].transform(train['Embarked'])
-            test['Embarked'] = enc[6][1].transform(test['Embarked'])
-
+            train['Embarked'] = enc[3]['Encoder'].transform(list_to_2d_array(train['Embarked']))
+            test['Embarked'] = enc[3]['Encoder'].transform(list_to_2d_array(test['Embarked']))
             # zip back together
             survived = train['Survived']
             train_id_name = list(zip(train['PassengerId'], train['Name']))
             train_data = nparray(list(zip(*train['Pclass'], *train['Sex'], train['Age'], train['Alone'], train['Fare'], train['Cabin'], train['Embarked'])), dtype=npfloat32)
             
+            test_id_name = list(zip(test['PassengerId'], test['Name']))
+            test_data = nparray(list(zip(*test['Pclass'], *test['Sex'], test['Age'], test['Alone'], test['Fare'], test['Cabin'], test['Embarked'])), dtype=npfloat32)
+            
+            # Final MinMax scaling
+            enc[-1]['Encoder'].fit(npappend(train_data, test_data, 0))
+            train_data = enc[-1]['Encoder'].transform(train_data)
+            test_data = enc[-1]['Encoder'].transform(test_data)
+
             desc = stats.describe(train_data)
             print("Min: ", desc.minmax[0])
             print("Max: ", desc.minmax[1])
@@ -235,9 +224,6 @@ class DataPreprocessor(KaggleCompetitionDataFetcher):
             # Split the training set to train and validation set
             train_data, validation_data, survived, validation_survived = train_test_split(train_data, survived, test_size=0.33)
             
-            test_id_name = list(zip(test['PassengerId'], test['Name']))
-            test_data = nparray(list(zip(*test['Pclass'], *test['Sex'], test['Age'], test['Alone'], test['Fare'], test['Cabin'], test['Embarked'])), dtype=npfloat32)
-
 
             desc = stats.describe(test_data)
             print("Min: ", desc.minmax[0])
@@ -259,11 +245,11 @@ class DataPreprocessor(KaggleCompetitionDataFetcher):
                     "test": test
                     }
             save_path.mkdir()
-            make_tfrecords(save_path, dataset)
+            save_tfdataset(save_path, dataset)
             save_encoders(save_path, encoders)
 
         else:
-            datasets = read_tfrecords(save_path)
+            datasets = load_tfdataset(save_path)
             train = datasets['train']
             validate = datasets['validate']
             test = datasets['test']

@@ -1,4 +1,4 @@
-from .. import tfdata, split_dataset, preprocess_spotify_features, Path
+from .. import tfdata, split_dataset, preprocess_spotify_features, Path, save_tfdataset, load_tfdataset, save_encoders
 from sklearn.preprocessing import MinMaxScaler
 from third_party.scipy.util import print_description
 from numpy import array as nparray, unique as npunique
@@ -17,7 +17,7 @@ class DataPreprocessor(DataFetcher):
         self.sql_path = self.sql_path.joinpath(source)
         
         # Dataset saving folder
-        self.save_folder = Path("data", "handlers", "spotify", "datasets", ds_name)
+        self.save_folder = Path(Path.cwd(), "data", "handlers", "spotify", "datasets", ds_name)
         
         # DS save path
         save_name = ds_name+"_dataset.json"
@@ -71,8 +71,9 @@ class DataPreprocessor(DataFetcher):
 
     def preprocess(self, dataset, scale=True, balance=True, new_split=False):
         
-        processed_path = self.save_folder.joinpath('processed.pkl')
-        if not processed_path.exists() or new_split:
+        processed_path = self.save_folder.joinpath('p_data.pkl')
+        save_path = self.save_folder.joinpath("processed")
+        if not save_path.exists() or new_split:
             # Take features and popularities from the sample
             # Also morph popularities into sets of tens
             features = []
@@ -132,23 +133,36 @@ class DataPreprocessor(DataFetcher):
             # Store split
             pkldump(datasets, processed_path.open('wb'))
 
+        
+            if scale:
+                # Apply scaling
+                for dataset in datasets:
+                    features = self.preprocess_features(dataset[0])
+
+            # Description
+            #print_description(features)
+            #print_description(labels)
+        
+            # Wrap to tf dataset
+            train = tfdata.Dataset.from_tensor_slices((datasets[0][0], datasets[0][1]))
+            test = tfdata.Dataset.from_tensor_slices((datasets[1][0], datasets[1][1]))
+            validate = tfdata.Dataset.from_tensor_slices((datasets[2][0], datasets[2][1]))
+            datasets = {
+                    "train": train,
+                    "validate": validate,
+                    "test": test
+                    }
+
+            encoder = [{
+                    "Input": "All",
+                    "Encoder": self.feature_scaler
+                    }]
+            save_tfdataset(save_path, datasets)
+            save_encoders(save_path, encoder)
         else:
+            datasets = load_tfdataset(save_path)
+            train = datasets['train']
+            validate = datasets['validate']
+            test = datasets['test']
 
-            # Load stored split
-            datasets = pklload(processed_path.open('rb'))
-        
-        if scale:
-            # Apply scaling
-            for dataset in datasets:
-                features = self.preprocess_features(dataset[0])
-
-        # Description
-        #print_description(features)
-        #print_description(labels)
-        
-        # Wrap to tf dataset
-        train = tfdata.Dataset.from_tensor_slices((datasets[0][0], datasets[0][1]))
-        test = tfdata.Dataset.from_tensor_slices((datasets[1][0], datasets[1][1]))
-        validate = tfdata.Dataset.from_tensor_slices((datasets[2][0], datasets[2][1]))
-        
         return (train, validate, test)

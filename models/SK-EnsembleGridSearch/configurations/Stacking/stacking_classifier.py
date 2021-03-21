@@ -1,24 +1,19 @@
-from sklearn.svm import SVC
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import StackingClassifier
-
 conf = {
 
 'models':[
     {
-    'model': StackingClassifier(
-                estimators=[
-                    ('KN', KNeighborsClassifier()), 
-                    ('DT', DecisionTreeClassifier()), 
-                    ('SVC', SVC(probability=True))]),
-                'params':[
-                    {}
-                ],
-                'name':'Stacking'
+    'module': 'sklearn.ensemble',
+    'params': {'estimators': [
+        {'name': 'KN', 'module': 'sklearn.neighbors', 'model': 'KNeighborsClassifier', 'params': {}},
+        {'name': 'DT', 'module': 'sklearn.tree', 'model': 'DecisionTreeClassifier', 'params': {}},
+        {'name': 'SVC', 'module': 'sklearn.svm', 'model': 'SVC', 'params': {'probability': True}}
+            ]
+        },
+    'search_params':[
+            {}
+        ],
+    'model':'StackingClassifier'
             },
 
-                ]
-
-
+    ]
 }

@@ -1,24 +1,19 @@
-from sklearn.svm import SVC
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import VotingClassifier
-
 conf = {
-    'models':[
-        {
-        'model': VotingClassifier(
-                        estimators=[
-                            ('KN',KNeighborsClassifier()), 
-                            ('DT', DecisionTreeClassifier()), 
-                            ('SVC',SVC(probability=True))
-                            ]
-                        ),
-        'params':[
-            {
+'models':[
+    {
+    'module': 'sklearn.ensemble',
+    'params': {'estimators': [
+        {'name': 'KN', 'module': 'sklearn.neighbors', 'model': 'KNeighborsClassifier', 'params': {}},
+        {'name': 'DT', 'module': 'sklearn.tree', 'model': 'DecisionTreeClassifier', 'params': {}},
+        {'name': 'SVC', 'module': 'sklearn.svm', 'model': 'SVC', 'params': {'probability': True}},
+            ]
+        },
+    'search_params':[
+                {
             'voting':['hard', 'soft']
-            },  
+                },  
             ],
-        'name':'Voting(KNC,DTC,SVC)'
+    'model':'VotingClassifier'
             },
 
     ]

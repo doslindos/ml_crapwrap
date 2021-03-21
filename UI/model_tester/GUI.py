@@ -1,6 +1,7 @@
 from .. import Path, Tk, ttk, filedialog, StringVar, build_blueprint, open_fileGUI, run_function, random_sample, get_dataset_info, show_data_tk, tfreshape, exit, dataset_generator, npargmax, nparray, npreshape, npsqueeze, tfdata, is_tensor, fetch_resource, take_image_screen, get_function_attr_values
 from .GUI_config import conf
 from utils.modules import fetch_model
+from utils.datasets import transform_features
 from .util import get_dataset
 from data.util.utils import load_encoders
 
@@ -48,16 +49,11 @@ class ModelTesterGUI:
         encoders = load_encoders(open_fileGUI(Path.cwd().joinpath("data", "handlers")))
         
         print(encoders)
-
-        if encoders['Type'] == 'Columns':
-            for i, enc in enumerate(encoders['Encoders']):
-                for e in enc:
-                    data[i] = e.transform(data[i])
-        elif encoders['Type'] == 'Image':
-            data, label = encoders['Encode'](data)
+        
+        data = transform_features(data, encoders)
             
         self.data = data
-        self.label = label
+        #self.label = label
         # Set up the data to display in the GUI
         self.setup_data(dataset=False)
         self.show_instance()

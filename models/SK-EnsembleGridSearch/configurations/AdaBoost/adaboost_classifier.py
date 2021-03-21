@@ -1,15 +1,13 @@
-from sklearn.ensemble import AdaBoostClassifier
-
 conf = {
 
 'models':[
     {
-    'model': AdaBoostClassifier(),
-        'params':[
+    'module': 'sklearn.ensemble',
+    'search_params':[
             {
             }
             ],
-    'name':'AdaBoost'
+    'model':'AdaBoostClassifier'
     },
  ]
 }

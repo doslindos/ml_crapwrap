@@ -1,4 +1,4 @@
-from .. import tfdata, preprocess_spotify_features, split_dataset, Path
+from .. import tfdata, preprocess_spotify_features, split_dataset, Path, save_tfdataset, load_tfdataset, save_encoders
 from sklearn.preprocessing import MinMaxScaler
 from imblearn.under_sampling import RandomUnderSampler
 from third_party.scipy.util import print_description
@@ -14,11 +14,11 @@ class DataPreprocessor(DataFetcher):
         self.handler_name = h_name
         self.dataset_name = ds_name
         # Path to the sql file for mysql fetch
-        self.resource_path = Path("data", "handlers", "billboard", "resources")
+        self.resource_path = Path(Path.cwd(), "data", "handlers", "billboard", "resources")
         self.resource_path = self.resource_path.joinpath(source)
         
         # Dataset saving path
-        self.save_folder = Path("data", "handlers", "billboard", "datasets", ds_name)
+        self.save_folder = Path(Path.cwd(), "data", "handlers", "billboard", "datasets", ds_name)
 
         save_name = ds_name+"_dataset.json"
 
@@ -46,10 +46,9 @@ class DataPreprocessor(DataFetcher):
         return self.feature_scaler.transform(features)
     
     def preprocess(self, dataset, scale=True, balance=True, new_split=False):
-        processed_path = self.save_folder.joinpath('processed.pkl')
-        print(processed_path)
-
-        if not processed_path.exists() or new_split:
+        processed_path = self.save_folder.joinpath('p_data.pkl')
+        save_path = self.save_folder.joinpath("processed")
+        if not save_path.exists() or new_split:
             
             # Take features and popularities from the sample
             features = []
@@ -114,33 +113,47 @@ class DataPreprocessor(DataFetcher):
             # Store split
             pkldump(datasets, processed_path.open('wb'))
 
-        else:
-            # Load stored split
-            datasets = pklload(processed_path.open('rb'))
-        
-        processed_datasets = []
-        if scale:
-            # Apply scaling
-            for dataset in datasets:
-                # Convert to list for changes
-                processed_datasets.append([self.preprocess_features(dataset[0]), dataset[1]])
-        else:
-            for dataset in datasets:
-                processed_datasets.append([dataset[0], dataset[1]])
+            processed_datasets = []
+            if scale:
+                # Apply scaling
+                for dataset in datasets:
+                    # Convert to list for changes
+                    processed_datasets.append([self.preprocess_features(dataset[0]), dataset[1]])
+            else:
+                for dataset in datasets:
+                    processed_datasets.append([dataset[0], dataset[1]])
 
-        if balance:
-            # Balance out the dataset
-            # Done by taking a random sample from each dataset label subset
-            # the samples are equal sized = dataset is balanced
-            for i, dataset in enumerate(processed_datasets):
-                # Convert to list for changes
-                f, l = self.balance_ds(dataset[0], dataset[1])
-                processed_datasets[i] = [f, l]
+            if balance:
+                # Balance out the dataset
+                # Done by taking a random sample from each dataset label subset
+                # the samples are equal sized = dataset is balanced
+                for i, dataset in enumerate(processed_datasets):
+                    # Convert to list for changes
+                    f, l = self.balance_ds(dataset[0], dataset[1])
+                    processed_datasets[i] = [f, l]
         
-        datasets = processed_datasets
-        # Wrap to tf dataset
-        train = tfdata.Dataset.from_tensor_slices((datasets[0][0], datasets[0][1]))
-        test = tfdata.Dataset.from_tensor_slices((datasets[2][0], datasets[2][1]))
-        validate = tfdata.Dataset.from_tensor_slices((datasets[1][0], datasets[1][1]))
-        
+            datasets = processed_datasets
+            # Wrap to tf dataset
+            train = tfdata.Dataset.from_tensor_slices((datasets[0][0], datasets[0][1]))
+            test = tfdata.Dataset.from_tensor_slices((datasets[2][0], datasets[2][1]))
+            validate = tfdata.Dataset.from_tensor_slices((datasets[1][0], datasets[1][1]))
+            
+            datasets = {
+                    "train": train,
+                    "validate": validate,
+                    "test": test
+                    }
+
+            encoder = [{
+                    "Input": "All",
+                    "Encoder": self.feature_scaler
+                    }]
+            save_tfdataset(save_path, datasets)
+            save_encoders(save_path, encoder)
+        else:
+            datasets = load_tfdataset(save_path)
+            train = datasets['train']
+            validate = datasets['validate']
+            test = datasets['test']
+
         return (train, validate, test)

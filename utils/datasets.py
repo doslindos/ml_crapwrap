@@ -56,3 +56,27 @@ def get_dataset_info(datasets, length=False):
         ds_info = get_info(datasets)
     
     return ds_info
+
+def transform_features(data, encoders, inverse=False):
+    
+    def transform(d, enc):
+        if not inverse:
+            d = enc.transform(d)
+        else:
+            d = enc.inverse_transform(d)
+    
+    for encoder in encoders:
+        inp = encoder['Input']
+        ec = encoder['Encoder']
+        if inp != 'All':
+            if isinstance(ec, list):
+                for e in ec:
+                    transform(data[...,inp], e)
+            else:
+                transform(data[...,inp], ec)
+        else:
+            if isinstance(ec, list):
+                for e in ec:
+                    transform(data, e)
+            else:
+                transform(data, ec)

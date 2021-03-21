@@ -1,6 +1,5 @@
-from .. import tfdata, normalize_image, Path
+from .. import tfdata, normalize_image, Path, save_tfdataset, load_tfdataset, save_encoders
 from .fetch import DataFetcher
-from ...util.utils import save_encoders
 
 class DataPreprocessor(DataFetcher):
 
@@ -8,7 +7,7 @@ class DataPreprocessor(DataFetcher):
     def __init__(self, h_name, ds_name, split=['train[:85%]', 'train[85%:]', 'test']):
         self.handler_name = h_name
         self.ds_name = ds_name
-        self.save_path = Path("data", "handlers", h_name, "datasets", ds_name)
+        self.save_path = Path(Path.cwd(), "data", "handlers", h_name, "datasets", ds_name)
         self.split = split
         self.prepro = normalize_image
 
@@ -21,7 +20,8 @@ class DataPreprocessor(DataFetcher):
 
     def preprocess(self, dataset, scale=True, balance=True, new_split=False):
         if not self.save_path.joinpath("encoders.pkl").exists():
-            save_encoders(self.save_path, {"Encode": self.prepro, "Type": "Image"})
+            encoders = ({'Input': 'All', 'Encoder': self.prepro})
+            save_encoders(self.save_path, encoders)
         if isinstance(dataset, list):
             train, validation, test = dataset
         

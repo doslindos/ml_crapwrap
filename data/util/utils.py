@@ -20,7 +20,7 @@ def kaggle_submit(competition, filepath, message=""):
         # Make download call
         print(sub_call(call))
 
-def make_tfrecords(path, datasets):
+def save_tfdataset(path, datasets):
     # Saves datasets
     # In:
     #   path:                           Path, to save folder
@@ -31,7 +31,7 @@ def make_tfrecords(path, datasets):
         with path.joinpath(key, "spec.pkl").open('wb') as fs:
             pkldump(ds.element_spec, fs)
 
-def read_tfrecords(path, dtype="float32"):
+def load_tfdataset(path, dtype="float32"):
     # Reads datasets
     # In:
     #   path:                           Path, to records
