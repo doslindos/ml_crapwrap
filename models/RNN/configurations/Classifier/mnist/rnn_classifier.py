@@ -1,4 +1,4 @@
-# Convolutional MNIST Classifier
+# RNN MNIST Classifier
 conf = {
     'train_params':{
         'batch_size':1000, 
@@ -13,7 +13,7 @@ conf = {
     'output_shape':[10],
     'layers':{
         
-        'Convo':{
+        'RNN':{
             'kernel_sizes':[[3, 3]],
             'filters':[1, 32],
             'strides':[[1, 1]],
@@ -23,13 +23,6 @@ conf = {
             'use_bias':True,
             'activations':['relu'],
             'dropouts':[None]
-            },
-    
-        'Dense': {
-            'weights':[512, 10],
-            'use_bias':True,
-            'activations':['relu', 'softmax'],
-            'dropouts':[None, None]
             },
         },
 }

@@ -4,7 +4,7 @@ from .. import exit, Path, save_configuration, save_weights, load_weights, load_
 
 from tensorflow import data as tfdata, optimizers as tfoptimizers, reshape as tfreshape
 
-#from third_party.tensorflow.build.layer_build_functions import Layer_Handler 
+#from third_party.tensorflow.building.handler import Layer_Handler 
 #from third_party.tensorflow.train.training_functions import tf_training_loop 
 #from third_party.tensorflow.train import optimization, loss_functions
 
@@ -52,7 +52,7 @@ class Model:
             batch_size, 
             epochs, 
             learning_rate,
-            loss_function='cross_entropy_w_sigmoid', 
+            loss_function='cross_entropy', 
             optimization_function='classifier',
             ):
         
