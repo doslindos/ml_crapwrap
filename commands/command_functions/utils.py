@@ -3,16 +3,16 @@ from plotting import plot_functions
 from data import data_info
 from . import Path, config, run_function, select_weights, read_prediction_file, ModelHandler, load_data, open_dirGUI
 
+def error(msg):
+    # Not sure does this work...
+    print(msg)
+    exit()
+
 def GPU_config():
     # For Tensorflow GPU this prevents weird errors in initializing tensorflow
     gpu_devices = config.experimental.list_physical_devices('GPU')
     for device in gpu_devices:
         config.experimental.set_memory_growth(device, True)
-
-def error(msg):
-    # Not sure does this work...
-    print(msg)
-    exit()
 
 def validate_args(args):
     # Validates arguments

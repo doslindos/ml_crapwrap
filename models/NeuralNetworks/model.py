@@ -144,7 +144,7 @@ class Model:
     def run(self, x, training=False):
         
         fed_input_shape = x.shape
-        
+
         # Reshape output
         if x.shape[1:] != self.c['input_shape']:
             in_shape = self.c['input_shape'].copy()

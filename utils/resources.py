@@ -56,11 +56,8 @@ def fetch_resource(path, desired_shape=None, desired_dtype=None):
                 print("Input must be numeric...  your input ", value ," can't be converted to a float...")
                 exit()
             
-            # Desired input array length
-            array_len = desired_shape[-1]
-
             # Read csv file
-            csv_file = csv_reader(path.open('r', encoding='utf8'), delimiter=';')
+            csv_file = csv_reader(path.open('r', encoding='utf8'), delimiter=',')
             # Loop through rows
             n_rows = []
             for row_num, row in enumerate(csv_file):
@@ -71,19 +68,26 @@ def fetch_resource(path, desired_shape=None, desired_dtype=None):
                         try:
                             value = float(value)
                         except ValueError:
-                            #TODO print error
-                            error(value)
+                            if row_num != 0:
+                                error(value)
+                            else:
+                                print("Suspecting headers... skipping this row")
+                                row = None
+                                break
                     else:
-                        #TODO print error
                         error(value)
 
                     row[i] = value
                 
-                n_rows.append(row)
+                if row is not None:
+                    n_rows.append(row)
 
             n_rows = nparray(n_rows, dtype=dtype)
             
             if desired_shape is not None:
+                # Desired input array length
+                array_len = desired_shape[-1]
+
                 if len(n_rows) > 1:
                     n_rows = n_rows.reshape((1, len(n_rows), array_len))
                 else:

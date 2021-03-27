@@ -5,7 +5,7 @@ from random import sample as random_sample
 from sys import exit
 
 from tensorflow import data as tfdata, reshape as tfreshape, is_tensor
-from numpy import argmax as npargmax, array as nparray, reshape as npreshape, squeeze as npsqueeze
+from numpy import argmax as npargmax, array as nparray, reshape as npreshape, squeeze as npsqueeze, append as npappend
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 

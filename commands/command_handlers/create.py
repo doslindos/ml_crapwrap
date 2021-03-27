@@ -58,7 +58,7 @@ class CreateArgs:
 
         # Validate input arguments
         validate_args(vars(parsed_args))
-        # Set up gpu if you use gpu version of the tensorflow
+        # Use GPUs if found
         GPU_config()
         # Run function
         train_model(parsed_args)

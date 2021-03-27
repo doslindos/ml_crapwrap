@@ -46,7 +46,7 @@ class ModelTestArgs:
         parsed_args = create_args(parser_args, add_args)
         # Validate input arguments
         validate_args(vars(parsed_args))
-        # Set up gpu if you use gpu version of the tensorflow
+        # Use GPUs if found
         GPU_config()
         # Run function
         test_model(parsed_args)
@@ -74,6 +74,8 @@ class ModelTestArgs:
         parsed_args = create_args(parser_args, add_args)
         # Validate input arguments
         validate_args(vars(parsed_args))
+        # Use GPUs if found
+        GPU_config()
         # Run function
         plot_model(parsed_args)
 
@@ -90,5 +92,7 @@ class ModelTestArgs:
         
         # Parse arguments
         parsed_args = create_args(parser_args, add_args)
+        # Use GPUs if found
+        GPU_config()
         # Run function
         UI(parsed_args)
