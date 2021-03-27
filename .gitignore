@@ -54,3 +54,6 @@ saved_models/
 #vim editor swap files
 *.swp
 *.swo
+
+# result files
+sources/kaggle/

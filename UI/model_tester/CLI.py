@@ -1,4 +1,4 @@
-from .. import Path, run_function, fetch_resource, dataset_generator, npargmax
+from .. import Path, run_function, fetch_resource, dataset_generator, npargmax, open_fileGUI
 from cmd import Cmd
 from .util import get_dataset
 from csv import writer as csvwriter
@@ -42,7 +42,7 @@ class ModelTesterCLI:
         def do_get_dataset(self, _ = None):
             # Select a loaded dataset
 
-            self.train, self.test, self.validate = get_dataset()
+            self.train, self.validate, self.test = get_dataset()
 
         def do_get_data(self, rootpath = None):
             # Select custom set of data
@@ -58,7 +58,7 @@ class ModelTesterCLI:
             self.data = self.choose_data(use)
             #TODO
 
-        def do_kaggle_submission_file(self, filename = 'results.csv'):
+        def do_prediction_file(self, filename = 'results.csv', with_ids = False):
             
             if filename == '':
                 filename = 'results.csv'
@@ -87,8 +87,11 @@ class ModelTesterCLI:
                             if isinstance(pred, str) or not hasattr(pred, '__iter__'):
                                 result = pred
                             else:
-                                results = npargmax(pred)
-                            writer.writerow([i, result])
+                                result = npargmax(pred)
+                            if with_ids:
+                                result = [i, result]
+
+                            writer.writerow([result])
 
 
             
