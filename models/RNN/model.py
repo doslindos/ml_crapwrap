@@ -4,13 +4,9 @@ from .. import exit, Path, save_configuration, save_weights, load_weights, load_
 
 from tensorflow import data as tfdata, optimizers as tfoptimizers, reshape as tfreshape
 
-#from third_party.tensorflow.building.handler import Layer_Handler 
-#from third_party.tensorflow.train.training_functions import tf_training_loop 
-#from third_party.tensorflow.train import optimization, loss_functions
-
-
-# THIS IS NOT IMPLEMENTED YET
-# I JUST COPIED THIS FROM NEURALNETWORKS HERE AS A TEMPLATE
+from third_party.tensorflow.building.handler import Layer_Handler 
+from third_party.tensorflow.train.training_functions import tf_training_loop 
+from third_party.tensorflow.train import optimization, loss_functions
 
 class Model:
 
@@ -32,8 +28,12 @@ class Model:
         path = Path('models/RNN/saved_models/')
         if not path.exists():
             path.mkdir()
-        # TODO SAVE PATH
-        path = save_weights(w, b, path.joinpath(self.conf_name))
+        
+        path = save_weights(w, b, path.joinpath(
+                                        self.conf_class_name[0], 
+                                        self.conf_class_name[1], 
+                                        self.conf_name)
+                                        )
         save_configuration(self.c, self.conf_name, path)
     
     def load(self, path):
@@ -48,16 +48,20 @@ class Model:
             self.bias[layer_name] = biases.item().get(layer_name)
 
     def train(self,
-            dataset,
+            datasets,
             batch_size, 
             epochs, 
             learning_rate,
             loss_function='cross_entropy', 
             optimization_function='classifier',
+            debug=False
             ):
         
-        if isinstance(dataset, dict):
-            dataset = tfdata.Dataset.from_tensor_slices({'x':dataset['x'], 'y':dataset['y']})
+        if isinstance(datasets, tuple):
+            train, validate = datasets
+        else:
+            train = datasets
+            validate = None
 
         #Define optimizer
         optimizer = tfoptimizers.Adam(learning_rate)
@@ -72,21 +76,37 @@ class Model:
         opt = getattr(optimization, optimization_function)
         
         #Dataset operations
-        #Cache
-        dataset.cache()
         #Batch
         if batch_size != 0:
-            dataset = dataset.batch(batch_size, drop_remainder=False)
+            train = train.batch(batch_size, drop_remainder=False)
         else:
-            dataset = dataset.batch(1)
+            train = train.batch(1)
 
         #Start training
-        tf_training_loop(dataset, self, loss_function, opt, optimizer, epochs, True, autoencoder=autoencoder)
+        tf_training_loop(
+                train,
+                validate,
+                self, 
+                loss_function, 
+                opt, 
+                optimizer, 
+                epochs, 
+                True, 
+                autoencoder=autoencoder
+                )
         
-        self.save()
+        if not debug:
+            self.save()
         print("Training finished...")
 
-    def handle_layers(self, x, config, name_specifier='', training=False):
+    def handle_layers(self, 
+                x, 
+                config, 
+                name_specifier='', 
+                training=False,
+                initial_state=None,
+                init_output=True
+                ):
         # Clear specifier if the layer is on the main configuration (not encoder or decoder)
         if name_specifier == 'main':
             name_specifier = ''
@@ -95,8 +115,11 @@ class Model:
             
             layer_name = name_specifier+'_'+layer_type+'_'+str(i)
             inputs = [x, self.weights, self.bias, conf, layer_name, self.c['data_type'], training]
+            
             if layer_type in dir(self.layer_handler):
                 x = getattr(self.layer_handler, layer_type)(*inputs)
+                if isinstance(x, tuple):
+                    x, states, outputs = x
             else:
                 print("Layer type: ", layer_type, " was not found...")
                 exit()
@@ -116,12 +139,19 @@ class Model:
             exit()
 
     def decoder(self, x, training=False):
+        if isinstance(x, tuple):
+            x, states, outputs = x
+
+        last_state = states[-1]
+
         if 'decoder' in list(self.c.keys()):
             handle_layers(
                     x,
                     self.c['decoder']['layers'],
                     'decoder',
-                    training
+                    training,
+                    last_state,
+                    False
                     )
         else:
             print("Model has not a defined decoder part...")

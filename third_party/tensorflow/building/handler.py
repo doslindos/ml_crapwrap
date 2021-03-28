@@ -1,10 +1,11 @@
 from .DENSE.layer import dense_layer
-from .DENSE.builder import dense_weights_creation_loop, dense_transpose_weights_creation_loop
+from .DENSE.builder import initialize_dense_layer
 
 from .CONV.layer import conv_layer
-from .CONV.builder import conv_weights_creation_loop, conv_transpose_weights_creation_loop
+from .CONV.builder import initialize_conv_layer
 
-from .RNN.layer import recurrent_layer
+from .LSTM.layer import Naive_LSTM_cell, optimized_LSTM_cell, symmetric_LSTM_cell
+from .LSTM.builder import initialize_LSTM_layer
 
 from .. import tf, npprod
 
@@ -99,82 +100,6 @@ class Layer_Handler:
         
         return out_shape
 
-    def initialize_dense_layer(self, layer_name, input_dtype, conf, weights, bias, transpose):
-        # Create weights for the DENSE layer if not made
-        # In:
-        #   conf:                   dict, configuration
-        # Out:
-        #   (weigths, bias):        (dict, dict) modified weights dicts
-        
-        if not layer_name in list(weights.keys()):
-            if isinstance(conf['weights'], list):
-                trainable_vars = True
-                # Create new weights
-                cws, cbs = dense_weights_creation_loop(
-                            conf['weights'], 
-                            conf['use_bias'], 
-                            input_dtype,
-                            transpose
-                            )
-
-            elif isinstance(conf['weights'], str):
-                trainable_vars = False
-                # Configuration should habe the name of the layer whichs weights are used
-                layer_to_reverse = conf['weights']
-            
-                if conf['use_bias']:
-                    reversed_bs = list(reversed(bias[layer_to_reverse][1]))
-                else:
-                    reversed_bs = None
-
-                cws, cbs = dense_transpose_weights_creation_loop(
-                    list(reversed(weights[layer_to_reverse][1])),
-                    reversed_bs,
-                    )
-            
-            weights[layer_name] = (trainable_vars, cws)
-            bias[layer_name] = (trainable_vars, cbs)
-
-        return (weights, bias)
-    
-    def initialize_conv_layer(self, layer_name, input_dtype, conf, weights, bias, transpose):
-        # Create weights for the CONV layer if not made
-        # In:
-        #   conf:                   dict, configuration
-        # Out:
-        #   (weigths, bias):        (dict, dict) modified weights dicts
-        if not layer_name in list(weights.keys()):
-            
-            # Use reversed weights
-            if isinstance(transpose, str) and 'kernel_sizes' not in conf.keys():
-                if conf['use_bias']:
-                    reversed_bs = list(reversed(bias[conf['transpose']][1]))
-                else:
-                    reversed_bs = None
-                #print([i.shape for i in weights[conf['transpose']][1]])       
-                cws, cbs = conv_transpose_weights_creation_loop(
-                    list(reversed(weights[conf['transpose']][1])),
-                    reversed_bs,
-                    )
-                trainable_vars = True
-            # Create new weights
-            else:
-                # Create new weights
-                cws, cbs = conv_weights_creation_loop(
-                                conf['kernel_sizes'],
-                                conf['filters'],
-                                conf['use_bias'], 
-                                input_dtype,
-                                transpose
-                                )
-                trainable_vars = False
-
-
-            weights[layer_name] = (trainable_vars, cws)
-            bias[layer_name] = (trainable_vars, cbs)
-
-        return (weights, bias)
-
     def Dense(  self,
                 x, 
                 weights, 
@@ -205,7 +130,7 @@ class Layer_Handler:
         x, original_shape, flatted_shape = self.handle_dense_input_shape(x, conf)
         
         # Initialize layers
-        weights, bias = self.initialize_dense_layer(layer_name, input_dtype, conf, weights, bias, transpose)
+        weights, bias = initialize_dense_layer(layer_name, input_dtype, conf, weights, bias, transpose)
         
         # Choose weights
         ws = weights[layer_name][1]
@@ -261,7 +186,7 @@ class Layer_Handler:
                 x = tf.reshape(x, self.original)
         
         # Initialize layers
-        weights, bias = self.initialize_conv_layer(layer_name, input_dtype, conf, weights, bias, transpose)
+        weights, bias = initialize_conv_layer(layer_name, input_dtype, conf, weights, bias, transpose)
         
         # Initialize the shapes object
         self.init_shapes(layer_name)
@@ -314,7 +239,7 @@ class Layer_Handler:
         
         return x
 
-    def Recurrent(self,
+    def LSTM(self,
                 x, 
                 weights, 
                 bias, 
@@ -322,6 +247,8 @@ class Layer_Handler:
                 layer_name, 
                 input_dtype, 
                 training=False,
+                initial_state=None,
+                init_output=True,
                 ):
 
         # Create or load weights to a dense layer
@@ -331,25 +258,83 @@ class Layer_Handler:
         #   conf:                       dict, configurations
         #   layer_name:                 str, name for the layer
         #   input_dtype:                str, datatype for weights
+        #   training:                   bool, defines if model is in training
+        #   initial_state:              Tensor, state tensor for cell
+        #   init_output:                bool, if cell output is initialized
         # Out:
         #   x:                          Tensor, output from the layers
+    
+        # Define cell
+        if conf['cell'] == 'optimized':
+            cell = optimized_LSTM_cell
+            init_shapes = [[x,shape[0], conf['units'][0]], [x,shape[0], conf['units'][0]]]
+        elif conf['cell'] == 'naive':
+            cell = Naive_LSTM_cell
+            init_shapes = [[x,shape[0], conf['units'][0]], [x,shape[0], conf['features']]]
+        elif conf['cell'] == 'symmetric':
+            cell = symmetric_LSTM_cell
+            init_shapes = [[x,shape[0], conf['units'][0]], [x,shape[0], conf['features']]]
+        
+        # Remove last dim if it is 1
+        #if x.shape[-1] == 1:
+        #    x = tf.reshape(x, [s for s in x.shape[:-1]])
+        
+        # What happends inside the cell
+        def loop(last_output, last_cell_state, step):
+            print("Input shape:")
+            if init_output:
+                if len(x.shape) == 3:
+                    inp = tf.slice(x, [0, 0, step], [-1, -1, 1])
+                    inp = tf.reshape(inp, (inp.shape[0], inp.shape[1]))
+                elif len(x.shape) == 4:
+                    inp = tf.slice(x, [0, 0, step, 0], [-1, -1, 1, -1])
+                    dim = tf.reduce_prod(inp.shape[1:])
+                    inp = tf.reshape(inp, [-1, dim])
+            else:
+                inp = last_output
+            output, state = cell(
+                    inp,
+                    (last_output, last_cell_state), 
+                    w,
+                    bs[layer],
+                    transpose
+                    )
+            all_outputs.write(step, output)
+            all_states.write(step, state)
 
+            return (output, state, tf.add(step, 1))
+        
         # Initialize the shapes object
         self.init_shapes(layer_name)
         
         # Check if the layer is a transposed layer
         transpose = self.check_transpose(conf)
 
-        # If input is not in shape (batch, features) flat the inputs
-        x, original_shape, flatted_shape = self.handle_dense_input_shape(x, conf)
-        
         # Initialize layers
-        weights, bias = self.initialize_dense_layer(conf, weights, bias)
-    
+        weights, bias = initialize_LSTM_layer(layer_name, input_dtype, conf, weights, bias, transpose)
+ 
+        # Initialize placeholders
+        all_outputs = tf.TensorArray(input_dtype, size=conf['sequence'])
+        all_states = tf.TensorArray(input_dtype, size=conf['sequence'])
+        
+        # Initialize cell
+        if initial_state is None:
+            initial_state = tf.zeros(init_shapes[0], dtype=input_dtype)
+        if init_output:
+            initial_output = tf.zeros(init_shapes[1], dtype=input_dtype)
+        else:
+            initial_output = x
+        print("INITS")
+        print(initial_state.shape)
+        print(initial_output.shape)
         # Choose weights
         ws = weights[layer_name][1]
         bs = bias[layer_name][1]
         shapes = self.shapes[layer_name]
+        
+        # tf.while statement
+        for_each_timestep = lambda a, b, step: tf.less(step, conf['sequence'])
+
         # Feed the input through the dense layer
         for layer, w in enumerate(ws):
 
@@ -358,16 +343,18 @@ class Layer_Handler:
             else:
                 shapes[layer]['IN'] = get_numpy_shape(x)
             
-            x = recurrent_layer(
-                x, 
-                w, 
-                bs[layer],
-                conf['activations'][layer], 
-                conf['dropouts'][layer], 
-                training,
-                transpose
-                )
-        
-            shapes[layer]['OUT'] = get_numpy_shape(x)
+            final_output, final_state, _ = tf.while_loop(
+                                            for_each_timestep, 
+                                            loop,
+                                            (initial_output, initial_state, 0),
+                                            parallel_iterations=conf['parallel_iters']
+                                            )
+
+            shapes[layer]['OUT'] = get_numpy_shape(final_output)
+
+        if conf['stack']:
+            x = tf.stack(all_outputs)
+        else:
+            x = final_output
                                 
-        return x
+        return (x, final_state)

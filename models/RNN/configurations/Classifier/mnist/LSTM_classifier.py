@@ -13,16 +13,15 @@ conf = {
     'output_shape':[10],
     'layers':{
         
-        'RNN':{
-            'kernel_sizes':[[3, 3]],
-            'filters':[1, 32],
-            'strides':[[1, 1]],
-            'poolings':[[2, 2]],
-            'paddings':['SAME'],
-            'batch_norms':[False],
-            'use_bias':True,
-            'activations':['relu'],
-            'dropouts':[None]
+        'LSTM':{
+            'cell': 'optimized',
+            'units': [1024],
+            'features': 28,
+            'sequence': 28,
+            'use_bias': True,
+            'stack': True,
+            'parallel_iters': 32,
+            'transpose': False
             },
         },
 }

@@ -3,12 +3,15 @@ from ..util import check_dtypes_match
 
 # Recurrent cells
 
-def Naive_LSTM_cell(new_input, last_output, weights, biases):
+def Naive_LSTM_cell(new_input, last_output, weights, biases, transpose=False):
     # Every gate works like this:
     # First add matrix multiplication of input and input weights with
     # matrix multiplication of last output and last output weights
     # Next add bias if used to the output of last step
     # Finally apply activation function
+
+    # Implemented from
+    # https://mlexplained.com/2019/02/15/building-an-lstm-from-scratch-in-pytorch-lstms-in-depth-part-1/
 
     # In:
     #   new_input:                      Tensor, new input fed to the model
@@ -18,27 +21,27 @@ def Naive_LSTM_cell(new_input, last_output, weights, biases):
     # Out:
 
     # Input gate
-    x = tf.add(tf.matmul(new_input, weights['input_i']), tf.matmul(last_output, weight['input_o']))
-    if bias['input']:
-        x = tf.add(x, bias['input'])
+    x = tf.add(tf.matmul(new_input, weights['input']['i']), tf.matmul(last_output, weights['input']['h']))
+    if biases is not None:
+        x = tf.add(x, biases['input'])
     input_gate_output = tf.sigmoid(x)
 
     # Forget gate
-    x = tf.add(tf.matmul(new_input, weight['forget_i']), tf.matmul(last_output, weight['forget_o']))
-    if bias['forget']:
-        x = tf.add(x, bias['forget'])
+    x = tf.add(tf.matmul(new_input, weights['forget']['i']), tf.matmul(last_output, weights['forget']['h']))
+    if biases is not None:
+        x = tf.add(x, biases['forget'])
     forget_gate_output = tf.sigmoid(x)
     
     # Update gate
-    x = tf.add(tf.matmul(new_input, weight['update_i']), tf.matmul(last_output, weight['update_o']))
-    if bias['update']:
-        x = tf.add(x, bias['update'])
+    x = tf.add(tf.matmul(new_input, weights['update']['i']), tf.matmul(last_output, weights['update']['h']))
+    if biases is not None:
+        x = tf.add(x, biases['update'])
     update_gate_output = tf.tanh(x)
     
     # Output gate
-    x = tf.add(tf.matmul(new_input, weights['output_i']), tf.matmul(last_output, weight['output_o']))
-    if bias['output']:
-        x = tf.add(x, bias['output'])
+    x = tf.add(tf.matmul(new_input, weights['output']['i']), tf.matmul(last_output, weights['output']['h']))
+    if biases is not None:
+        x = tf.add(x, biases['output'])
     output_gate_output = tf.sigmoid(x)
 
     cell_state = forget_gate_output * last_state + input_gate_output * update_gate_output
@@ -50,19 +53,27 @@ def optimized_LSTM_cell(new_input, output_state, weights, biases, transpose=Fals
     
     last_output, last_state = output_state
 
+    print("INPUTS")
+    print(new_input.shape)
+    print(last_output.shape)
+    print(last_state.shape)
+    print("WEIGHTS")
+    print(weights['ih'].shape)
+    print(weights['hh'].shape)
+    print(biases['b'].shape)
     if not transpose:
         all_gates = tf.add(
-            tf.matmul(new_input, weight['ih']), 
-            tf.matmul(last_output, weight['hh'])
+            tf.matmul(new_input, weights['ih']), 
+            tf.matmul(last_output, weights['hh'])
             )
     else:
         all_gates = tf.add(
             tf.matmul(new_input, weights['hh']), 
             tf.matmul(last_output, weights['hh'])
             )
-
-    if bias['b']:
-        all_gates = tf.add(x, biases['b'])
+    
+    if 'b' in biases.keys():
+        all_gates = tf.add(all_gates, biases['b'])
 
     input_gate, forget_gate, update_gate, output_gate = tf.split(all_gates, 4, 1)
     
@@ -80,50 +91,9 @@ def symmetric_LSTM_cell(new_input, last_output, weights, biases, transpose=False
 
     cell_output, cell_state = optimized_LSTM_cell(new_input, last_output, transpose)
 
-    cell_output = tf.matmul(cell_output, weight['symmetric'])
+    cell_output = tf.matmul(cell_output, weights['symmetric'])
     if biases['symmetric']:
         cell_output = tf.add(cell_output, biases['symmetric'])
 
     return (cell_output, cell_state)
 
-# Recurrent
-
-def recurrent_layer(
-        x, 
-        weight, 
-        bias=None, 
-        activation=None, 
-        dropout=None, 
-        training=False, 
-        transpose=False
-        ):
-
-    # Recurrent layer
-    # In:
-    #   x:                          tensorflow Tensor, input data
-    #   weight:                     tensorflow Variable, weight
-    #   bias:                       tensorflow Variable, bias or None if not used
-    #   activation:                 str, name of the class tf.nn function or None if not used
-    #   dropout:                    float, value to dropout function or None if not used
-    #   training:                   bool
-    # Out:
-    #   return:                     tensorflow Tensor, layer output
-    
-    if not transpose:
-        x = tf.matmul(x, weight)
-        if bias is not None:
-            x = tf.add(x, bias)
-    else:
-        if bias is not None:
-            x = tf.add(x, bias)
-        x = tf.matmul(x, weight)
-    
-    if activation is not None:
-        x = getattr(tf.nn, activation)(x)
-
-    if training and dropout is not None:
-        x = getattr(tf.nn, 'dropout')(x, rate=dropout)
-    
-    return x
-
-# Recurrent 

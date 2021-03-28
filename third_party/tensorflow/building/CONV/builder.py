@@ -61,3 +61,48 @@ def conv_weights_creation_loop(kernel_size, filters, use_bias, weight_dtype, tra
             break
 
     return (weights, bias)
+    
+def initialize_conv_layer(
+        layer_name, 
+        input_dtype, 
+        conf, 
+        weights, 
+        bias, 
+        transpose
+        ):
+    # Create weights for the CONV layer if not made
+    # In:
+    #   conf:                   dict, configuration
+    # Out:
+    #   (weigths, bias):        (dict, dict) modified weights dicts
+    if not layer_name in list(weights.keys()):
+        
+        # Use reversed weights
+        if isinstance(transpose, str) and 'kernel_sizes' not in conf.keys():
+            if conf['use_bias']:
+                reversed_bs = list(reversed(bias[conf['transpose']][1]))
+            else:
+                reversed_bs = None
+            #print([i.shape for i in weights[conf['transpose']][1]])       
+            cws, cbs = conv_transpose_weights_creation_loop(
+                list(reversed(weights[conf['transpose']][1])),
+                reversed_bs,
+                )
+            trainable_vars = True
+        # Create new weights
+        else:
+            # Create new weights
+            cws, cbs = conv_weights_creation_loop(
+                            conf['kernel_sizes'],
+                            conf['filters'],
+                            conf['use_bias'], 
+                            input_dtype,
+                            transpose
+                            )
+            trainable_vars = False
+
+
+        weights[layer_name] = (trainable_vars, cws)
+        bias[layer_name] = (trainable_vars, cbs)
+
+    return (weights, bias)

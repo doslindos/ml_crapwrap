@@ -58,3 +58,48 @@ def dense_transpose_weights_creation_loop(weights_list, bias=None):
         biases.append(b_var)
 
     return (weights, bias)
+    
+def initialize_dense_layer(
+        layer_name, 
+        input_dtype, 
+        conf, 
+        weights, 
+        bias, 
+        transpose
+        ):
+    # Create weights for the DENSE layer if not made
+    # In:
+    #   conf:                   dict, configuration
+    # Out:
+    #   (weigths, bias):        (dict, dict) modified weights dicts
+    
+    if not layer_name in list(weights.keys()):
+        if isinstance(conf['weights'], list):
+            trainable_vars = True
+            # Create new weights
+            cws, cbs = dense_weights_creation_loop(
+                        conf['weights'], 
+                        conf['use_bias'], 
+                        input_dtype,
+                        transpose
+                        )
+
+        elif isinstance(conf['weights'], str):
+            trainable_vars = False
+            # Configuration should habe the name of the layer whichs weights are used
+            layer_to_reverse = conf['weights']
+        
+            if conf['use_bias']:
+                reversed_bs = list(reversed(bias[layer_to_reverse][1]))
+            else:
+                reversed_bs = None
+
+            cws, cbs = dense_transpose_weights_creation_loop(
+                list(reversed(weights[layer_to_reverse][1])),
+                reversed_bs,
+                )
+        
+        weights[layer_name] = (trainable_vars, cws)
+        bias[layer_name] = (trainable_vars, cbs)
+
+    return (weights, bias)
