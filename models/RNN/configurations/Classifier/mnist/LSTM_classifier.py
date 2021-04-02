@@ -19,9 +19,16 @@ conf = {
             'features': 28,
             'sequence': 28,
             'use_bias': True,
-            'stack': True,
+            'stack': False,
             'parallel_iters': 32,
             'transpose': False
             },
+
+        'Dense': {
+            'weights':[1024, 10],
+            'use_bias':True,
+            'activations':['softmax'],
+            'dropouts':[None]
+            }
         },
 }

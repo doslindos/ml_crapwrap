@@ -53,14 +53,6 @@ def optimized_LSTM_cell(new_input, output_state, weights, biases, transpose=Fals
     
     last_output, last_state = output_state
 
-    print("INPUTS")
-    print(new_input.shape)
-    print(last_output.shape)
-    print(last_state.shape)
-    print("WEIGHTS")
-    print(weights['ih'].shape)
-    print(weights['hh'].shape)
-    print(biases['b'].shape)
     if not transpose:
         all_gates = tf.add(
             tf.matmul(new_input, weights['ih']), 

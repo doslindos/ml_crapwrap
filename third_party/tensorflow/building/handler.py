@@ -267,13 +267,13 @@ class Layer_Handler:
         # Define cell
         if conf['cell'] == 'optimized':
             cell = optimized_LSTM_cell
-            init_shapes = [[x,shape[0], conf['units'][0]], [x,shape[0], conf['units'][0]]]
+            init_shapes = [[x.shape[0], conf['units'][0]], [x.shape[0], conf['units'][0]]]
         elif conf['cell'] == 'naive':
             cell = Naive_LSTM_cell
-            init_shapes = [[x,shape[0], conf['units'][0]], [x,shape[0], conf['features']]]
+            init_shapes = [[x.shape[0], conf['units'][0]], [x.shape[0], conf['features']]]
         elif conf['cell'] == 'symmetric':
             cell = symmetric_LSTM_cell
-            init_shapes = [[x,shape[0], conf['units'][0]], [x,shape[0], conf['features']]]
+            init_shapes = [[x.shape[0], conf['units'][0]], [x.shape[0], conf['features']]]
         
         # Remove last dim if it is 1
         #if x.shape[-1] == 1:
@@ -281,7 +281,6 @@ class Layer_Handler:
         
         # What happends inside the cell
         def loop(last_output, last_cell_state, step):
-            print("Input shape:")
             if init_output:
                 if len(x.shape) == 3:
                     inp = tf.slice(x, [0, 0, step], [-1, -1, 1])
@@ -299,8 +298,8 @@ class Layer_Handler:
                     bs[layer],
                     transpose
                     )
-            all_outputs.write(step, output)
-            all_states.write(step, state)
+            self.all_outputs = self.all_outputs.write(step, output)
+            #self.all_states = self.all_states.write(step, state)
 
             return (output, state, tf.add(step, 1))
         
@@ -314,8 +313,8 @@ class Layer_Handler:
         weights, bias = initialize_LSTM_layer(layer_name, input_dtype, conf, weights, bias, transpose)
  
         # Initialize placeholders
-        all_outputs = tf.TensorArray(input_dtype, size=conf['sequence'])
-        all_states = tf.TensorArray(input_dtype, size=conf['sequence'])
+        self.all_outputs = tf.TensorArray(input_dtype, size=conf['sequence'])
+        #self.all_states = tf.TensorArray(input_dtype, size=conf['sequence'])
         
         # Initialize cell
         if initial_state is None:
@@ -324,9 +323,6 @@ class Layer_Handler:
             initial_output = tf.zeros(init_shapes[1], dtype=input_dtype)
         else:
             initial_output = x
-        print("INITS")
-        print(initial_state.shape)
-        print(initial_output.shape)
         # Choose weights
         ws = weights[layer_name][1]
         bs = bias[layer_name][1]
@@ -353,8 +349,8 @@ class Layer_Handler:
             shapes[layer]['OUT'] = get_numpy_shape(final_output)
 
         if conf['stack']:
-            x = tf.stack(all_outputs)
+            x = self.all_outputs.stack()
         else:
             x = final_output
                                 
-        return (x, final_state)
+        return (x, final_state, self.all_outputs.stack())

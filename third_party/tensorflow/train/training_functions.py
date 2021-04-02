@@ -109,7 +109,7 @@ def tf_training_loop(
             
             if not autoencoder:
                 train_metric.update_state(tf.argmax(y, 1), tf.argmax(output, 1))
-                print("Training accuracy: ", train_metric.result().numpy(), " loss: ", loss.numpy())
+                print("Overall training accuracy: ", train_metric.result().numpy(), " loss: ", loss.numpy())
 
             if validation is not None:
                 total_val_loss = 0
