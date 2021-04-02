@@ -83,6 +83,8 @@ def tf_training_loop(
     # Set onehot encoding to False if autoencoder
     if autoencoder:
         onehot = False
+        train_metric = None
+        validation_metric = None
     else:
         # Initialize accuracy metrics
         train_metric = tf.keras.metrics.Accuracy()
@@ -90,7 +92,8 @@ def tf_training_loop(
 
     for epoch in range(epochs):
         # Reset the metric state
-        train_metric.reset_states()
+        if train_metric is not None:
+            train_metric.reset_states()
 
         for step, batch_x in enumerate(train):
             print("Batch: ", step)
@@ -110,10 +113,13 @@ def tf_training_loop(
             if not autoencoder:
                 train_metric.update_state(tf.argmax(y, 1), tf.argmax(output, 1))
                 print("Overall training accuracy: ", train_metric.result().numpy(), " loss: ", loss.numpy())
+            else:
+                print("Training batch loss: ", loss.numpy())
 
             if validation is not None:
                 total_val_loss = 0
-                validation_metric.reset_states()
+                if validation_metric is not None:
+                    validation_metric.reset_states()
                 for batch in validation.batch(validation.cardinality().numpy()):
                     x, y = parse_sample(batch, output_shape, onehot)
                     if autoencoder:
@@ -121,7 +127,15 @@ def tf_training_loop(
                     val_out = model.run(x, training=False)
                     validation_loss = loss_function(val_out, y)
                     total_val_loss =+ validation_loss.numpy()
-                    validation_metric.update_state(tf.argmax(y, 1), tf.argmax(val_out, 1))
-                
-                print("Validation accuracy", validation_metric.result().numpy(), " loss: ", total_val_loss)
+                    if validation_metric is not None:
+                        validation_metric.update_state(
+                                tf.argmax(y, 1), 
+                                tf.argmax(val_out, 1)
+                                )
+
+                if not autoencoder:
+                    print("Validation accuracy", validation_metric.result().numpy(), " loss: ", total_val_loss)
+                else:
+                    print("Validation loss: ", total_val_loss)
+
     print("Training finished...")

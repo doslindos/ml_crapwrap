@@ -37,7 +37,7 @@ class Layer_Handler:
                     conf['weights'].append(int(self.out_dense))
 
         if 'transpose' in list(conf.keys()):
-            if 'weights' in list(conf.keys()):
+            if ['weights', 'units'] in list(conf.keys()):
                 add_last_hidden_to_conf()
             return conf['transpose']
         elif 'weights' in list(conf.keys()):
@@ -58,7 +58,7 @@ class Layer_Handler:
         #   x:                      Tensor, shaped or unshaped input
         #   original_shape:         tuple, the shape before flattening
         #   flat_shape:             tuple, shape after flattening
-
+        
         if len(x.shape) > 2:
             original_shape = get_numpy_shape(x)
             flatted_shape = npprod(x.shape[1:])

@@ -92,7 +92,8 @@ class Model:
                 optimizer, 
                 epochs, 
                 True, 
-                autoencoder=autoencoder
+                autoencoder=autoencoder,
+                debug=False
                 )
         
         if not debug:
