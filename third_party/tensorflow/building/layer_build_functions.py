@@ -269,7 +269,7 @@ class Layer_Handler:
                     list(reversed(weights[conf['transpose']][1])),
                     reversed_bs,
                     )
-                trainable_vars = True
+                trainable_vars = False
             # Create new weights
             else:
                 # Create new weights
@@ -280,7 +280,7 @@ class Layer_Handler:
                                 input_dtype,
                                 transpose
                                 )
-                trainable_vars = False
+                trainable_vars = True
 
 
             weights[layer_name] = (trainable_vars, cws)
