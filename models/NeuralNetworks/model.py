@@ -111,6 +111,10 @@ class Model:
             inputs = [x, self.weights, self.bias, conf, layer_name, self.c['data_type'], training]
             if layer_type in dir(self.layer_handler):
                 x = getattr(self.layer_handler, layer_type)(*inputs)
+
+                # Handle RNNs
+                if isinstance(x, tuple):
+                    x, states, outputs = x
             else:
                 print("Layer type: ", layer_type, " was not found...")
                 exit()
