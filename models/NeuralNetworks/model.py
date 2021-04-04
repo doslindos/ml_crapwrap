@@ -4,7 +4,7 @@ from .. import exit, Path, save_configuration, save_weights, load_weights, load_
 
 from tensorflow import data as tfdata, optimizers as tfoptimizers, reshape as tfreshape
 
-from third_party.tensorflow.building.layer_build_functions import Layer_Handler 
+from third_party.tensorflow.building.handler import Layer_Handler 
 from third_party.tensorflow.train.training_functions import tf_training_loop 
 from third_party.tensorflow.train import optimization, loss_functions
 
@@ -111,6 +111,10 @@ class Model:
             inputs = [x, self.weights, self.bias, conf, layer_name, self.c['data_type'], training]
             if layer_type in dir(self.layer_handler):
                 x = getattr(self.layer_handler, layer_type)(*inputs)
+
+                # Handle RNNs
+                if isinstance(x, tuple):
+                    x, states, outputs = x
             else:
                 print("Layer type: ", layer_type, " was not found...")
                 exit()

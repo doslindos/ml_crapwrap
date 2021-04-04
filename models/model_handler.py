@@ -4,6 +4,7 @@ from tests.model_tests import test_functions
 class ModelHandler:
 
     def __init__(self, datasets, model_name, conf_name):
+        print(conf_name)
         if datasets is not None:
             if len(datasets) == 2:
                 self.training_dataset = datasets[0]
