@@ -54,3 +54,4 @@ def scatter(labels, data):
     plt.legend()
     #Show the plot
     plt.show()
+    

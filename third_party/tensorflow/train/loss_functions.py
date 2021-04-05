@@ -23,3 +23,6 @@ def cross_entropy_w_sigmoid(prediction, true_label):
 def keras_sparse_categorical_cross(prediction, true_label):
     true_label = check_dtypes_match(true_label, prediction)
     return tf.keras.losses.sparse_categorical_crossentropy(true_label, prediction, from_logits=True)
+
+def kl_divergence(prediction, target):
+    return tf.reduce_mean(tf.reduce_sum(target*tf.math.log(target/(prediction)), axis=1))

@@ -1,4 +1,4 @@
-from .. import apply_dim_reduction, results_to_nplist, exit, plt, nparray, npsum, npappend
+from .. import apply_dim_reduction, results_to_nplist, exit, plt, nparray, npsum, npappend, npwhere, npfull
 
 def get_cmap(n, name='rainbow'):
     # Creates a plt colormap object which returns RGB values for the value
@@ -111,4 +111,47 @@ def build_histogram(data, labels):
 
     plt.bar(labels, data)
     plt.show()
+    
+def plot_codings(codings, labels=None, show=False, function='PCA'):
+        
+    print(codings.shape)
 
+    def split_codings(codings):
+        return zip(*codings)
+    
+
+    if labels is not None:
+        labels_set = set(labels.flat)
+        cmap = get_cmap(len(labels_set))
+    
+    if codings.shape[-1] <= 2:
+        x, y = zip(*codings)
+        init = None
+    else:
+        init, fit, data = apply_dim_reduction(codings, function)
+        # Take only two dims per sample
+        x, y = zip(*data[:, :2])
+    
+    x = nparray(x)
+    y = nparray(y)
+    
+    c_fig, c_ax = plt.subplots()
+    
+    if labels is not None:
+        for i, label in enumerate(labels_set):
+            print(i, label)
+            indexes = npwhere(labels == label)[0]
+            if isinstance(labels[0], int):
+                c = cmap(labels[indexes])
+            else:
+                c = cmap(npfull((len(labels[indexes])), i))
+
+            scatter = c_ax.scatter(x[indexes], y[indexes], c=c, label=label)
+    else:
+        scatter = c_ax.scatter(x, y)
+
+    if show:
+        plt.legend()
+        plt.show()
+
+    return (c_fig, c_ax, init)

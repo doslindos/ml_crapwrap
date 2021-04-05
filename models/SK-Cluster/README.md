@@ -1,2 +1,0 @@
-# SK-Cluster models
-## TODO

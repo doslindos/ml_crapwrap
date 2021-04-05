@@ -15,10 +15,10 @@ def classifier(model_object, x, y, loss_function, optimizer, training=True):
         model_object.trainable_vars = []
         ws = model_object.weights
         bs = model_object.bias
-        for layer_name, w in ws.items():
+        for layer, w in ws.items():
             if w[0]:
                 model_object.trainable_vars += get_weights(w[1])
-                if layer_name in bs.keys() and bs[layer_name][0]:
+                if layer_name in bs.keys() and bs[layer][0]:
                     model_object.trainable_vars += get_weights(bs[layer_name][1])
     
     gradients = g.gradient(loss, model_object.trainable_vars)

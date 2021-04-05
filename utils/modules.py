@@ -1,5 +1,5 @@
 from importlib import import_module
-from importlib.util import find_spec
+from importlib.util import find_spec, spec_from_file_location, module_from_spec
 from . import Path
 from UI import open_fileGUI
 from utils.utils import recursive_file_search
@@ -10,7 +10,7 @@ def get_module(path_to_module):
     #   path_to_module:                 str, module name as a string
     # Out:
     #   fetched modul:                  module
-    from importlib.util import spec_from_file_location, module_from_spec
+    
     if isinstance(path_to_module, str):
         if find_spec(path_to_module) is not None:
             return import_module(path_to_module)

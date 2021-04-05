@@ -46,7 +46,7 @@ def parse_sample(batch, output_shape, onehot=True):
         x = tf.reshape(x, [-1, x.shape[0]])
     if len(y.shape) == 1:
         y = tf.reshape(y, [y.shape[0], -1])
-
+    
     return (x, y)
 
 def tf_training_loop(
@@ -59,7 +59,8 @@ def tf_training_loop(
         epochs=1, 
         onehot=False,
         autoencoder=False,
-        debug=False
+        debug=False,
+        validation_batch=None
         ):
 
     # The training loop
@@ -120,7 +121,9 @@ def tf_training_loop(
                 total_val_loss = 0
                 if validation_metric is not None:
                     validation_metric.reset_states()
-                for batch in validation.batch(validation.cardinality().numpy()):
+                if not validation_batch:
+                    validation_batch = validation.cardinality().numpy()
+                for batch in validation.batch(validation_batch):
                     x, y = parse_sample(batch, output_shape, onehot)
                     if autoencoder:
                         y = x
