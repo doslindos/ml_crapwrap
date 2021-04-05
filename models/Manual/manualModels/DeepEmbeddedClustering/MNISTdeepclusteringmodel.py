@@ -11,27 +11,37 @@ import numpy as np
 
 class Autoencoder:
 
-    def __init__(self, ws=None):
+    def __init__(self, ws=None, AE=True):
         # Create autoencoder weights if given
         self.c = {}
+        
+        if AE:
+            self.pool = None
+            self.rshape = [14, 14, 32]
+        else:
+            self.pool = [2,2]
+            self.rshape = [7, 7, 32]
+
         if ws is None:
            self.ws = {
                    'weights': {
-                        'conv1': create_weights([3, 3, 1, 32], dtype="float32"),
-                        'conv2': create_weights([5, 5, 32, 64], dtype="float32"),
-                        'dense': create_weights([14*10*64, 10], dtype="float32")
+                        'conv1': create_weights([5, 5, 1, 32], dtype="float32"),
+                        'dense1': create_weights([np.prod(self.rshape), 100], dtype="float32"),
+                        'dense2': create_weights([100, 10], dtype="float32")
                         },
                     'bias': {
                         'conv1': create_weights([32], dtype="float32"),
-                        'conv2': create_weights([64], dtype="float32"),
-                        'dense': create_weights([10], dtype="float32")
+                        'dense1': create_weights([100], dtype="float32"),
+                        'dense2': create_weights([10], dtype="float32")
                         }
                    } 
 
-           self.trainable_vars = self.get_weights()
-
         else:
             self.ws = ws
+
+
+        self.trainable_vars = self.get_weights()
+        self.AE = AE
 
     def get_weights(self):
         def ws(w):
@@ -44,13 +54,12 @@ class Autoencoder:
         return list(ws(self.ws))
 
     def encoder(self, x, training=False):
-
         x = conv_layer(
                 x, 
                 self.ws['weights']['conv1'],
-                [1, 1, 1, 1],
+                [1, 2, 2, 1],
                 'SAME',
-                None,
+                self.pool,
                 self.ws['bias']['conv1'],
                 'leaky_relu',
                 None,
@@ -58,72 +67,65 @@ class Autoencoder:
                 training,
                 False
                 )
-        x = conv_layer(
-                x, 
-                self.ws['weights']['conv2'],
-                [1, 2, 3, 1],
-                'SAME',
-                None,
-                self.ws['bias']['conv2'],
-                'leaky_relu',
-                None,
-                False,
-                training,
-                False
-                )
         # FLatten
-        x = tf.reshape(x, [-1, 14*10*64])
+        x = tf.reshape(x, [-1, np.prod(self.rshape)])
         x = dense_layer(
                 x, 
-                self.ws['weights']['dense'],
-                self.ws['bias']['dense'],
+                self.ws['weights']['dense1'],
+                self.ws['bias']['dense1'],
+                'leaky_relu',
+                None,
+                training,
+                False
+                )
+        x = dense_layer(
+                x, 
+                self.ws['weights']['dense2'],
+                self.ws['bias']['dense2'],
                 None,
                 None,
                 training,
                 False
                 )
-        
+        if not self.AE:
+            x = tf.nn.softmax(x)
         return x
 
     def decoder(self, x, training=False):
 
         x = dense_layer(
                 x, 
-                tf.transpose(self.ws['weights']['dense']),
-                self.ws['bias']['dense'],
+                tf.transpose(self.ws['weights']['dense2']),
+                self.ws['bias']['dense2'],
                 None,
                 None,
                 training,
                 True
                 )
+        x = dense_layer(
+                x, 
+                tf.transpose(self.ws['weights']['dense1']),
+                self.ws['bias']['dense1'],
+                'leaky_relu',
+                None,
+                training,
+                True
+                )
         # Reshape
-        x = tf.reshape(x, [-1, 14, 10, 64])
-
+        x = tf.reshape(x, [-1, self.rshape[0], self.rshape[1], self.rshape[2]])
+        
         x = conv_layer(
                 x, 
-                self.ws['weights']['conv2'],
-                [1, 2, 3, 1],
+                self.ws['weights']['conv1'],
+                [1, 2, 2, 1],
                 'SAME',
-                None,
-                self.ws['bias']['conv2'],
+                self.pool,
+                self.ws['bias']['conv1'],
                 'leaky_relu',
                 None,
                 False,
                 training,
-                (x.shape[0], 28,28,32)
-                )
-        x = conv_layer(
-                x, 
-                self.ws['weights']['conv1'],
-                [1, 1, 1, 1],
-                'SAME',
-                None,
-                self.ws['bias']['conv1'],
-                'leaky_relu',
-                None,
-                0.2,
-                training,
-                (x.shape[0], 28, 28, 1)
+                (x.shape[0], 28,28,1)
                 )
 
         return x
@@ -131,18 +133,19 @@ class Autoencoder:
     def run(self, x, training=False):
         
         x = self.encoder(x, training)
-        x = self.decoder(x, training)
+        if self.AE:
+            x = self.decoder(x, training)
         return x
 
 class DeepEmbeddingClustering:
 
-    def __init__(self, num_of_clusters, input_shape, weights=None, alpha=1):
+    def __init__(self, num_of_clusters, input_shape, weights=None, alpha=1, AE=True):
         self.n_clusters = num_of_clusters
         self.input_shape = input_shape
         self.alpha = alpha
-        self.model = Autoencoder(weights)
+        self.model = Autoencoder(weights, AE)
 
-    def train_Autoencoder(self, datasets):
+    def init_Autoencoder(self, datasets):
         tf_training_loop(
             datasets[0].batch(1000),
             datasets[1],
@@ -153,6 +156,21 @@ class DeepEmbeddingClustering:
             1,
             False,
             True,
+            False,
+            1000
+                )
+    
+    def init_Classifier(self, datasets):
+        tf_training_loop(
+            datasets[0].batch(1000),
+            datasets[1],
+            self.model,
+            mean_squared_error,
+            classifier,
+            tf.optimizers.Adam(0.0015),
+            1,
+            10,
+            False,
             False,
             1000
                 )

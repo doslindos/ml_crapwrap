@@ -34,8 +34,11 @@ def parse_sample(batch, output_shape, onehot=True):
                 print("Your output shape is in ", len(output_shape), " dimensions. It should be in only 1 dim")
                 exit()
         else:
-            print("You are using one hot encoding without defined 'output_shape' in configuration...")
-            exit()
+            if isinstance(onehot, int):
+                y = tf.one_hot(y, onehot, dtype=x.dtype)
+            else:
+                print("You are using one hot encoding without defined 'output_shape' in configuration...")
+                exit()
     
     #Cast to same datatype if not already
     if x.dtype != y.dtype:

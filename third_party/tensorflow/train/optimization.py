@@ -5,7 +5,6 @@ def classifier(model_object, x, y, loss_function, optimizer, training=True):
     with tf.GradientTape() as g:
         #Feed input to model
         output = model_object.run(x, training)
-
         #Calculate loss
         loss = loss_function(output, y)
     
@@ -18,8 +17,8 @@ def classifier(model_object, x, y, loss_function, optimizer, training=True):
         for layer, w in ws.items():
             if w[0]:
                 model_object.trainable_vars += get_weights(w[1])
-                if layer_name in bs.keys() and bs[layer][0]:
-                    model_object.trainable_vars += get_weights(bs[layer_name][1])
+                if layer in bs.keys() and bs[layer][0]:
+                    model_object.trainable_vars += get_weights(bs[layer][1])
     
     gradients = g.gradient(loss, model_object.trainable_vars)
     if training:
